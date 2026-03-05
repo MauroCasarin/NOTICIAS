@@ -9,13 +9,14 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Falta la Variable de Entorno: NoticiasAPI' });
   }
 
-  // Prompt optimizado para un "Veredicto Total" y búsqueda de cotizaciones
+  // Instrucciones críticas para evitar errores en las cotizaciones
   const prompt = modo === 'resumir' 
-    ? `VEREDICTO FLASH: Basado en estos titulares, dime en máximo 15 palabras lo más importante y el dólar/mep: ${titulos}`
-    : `VEREDICTO TOTAL: Analiza todos estos titulares. 
-       1. Identifica el tema más repetido y cuántas veces aparece.
-       2. Resume en 4 oraciones la tendencia informativa del momento.
-       3. Detalla cotizaciones argentinas (Dólar Blue, MEP, Oficial) si figuran.
+    ? `SINTESIS FLASH: Analiza y resume en máximo 15 palabras. Si mencionas el dólar, usa EXACTAMENTE el valor que figure en los titulares como precio de venta actual. Si no hay un precio claro, ignóralo: ${titulos}`
+    : `VEREDICTO DE MEDIOS:
+       1. TEMA CENTRAL: Qué es lo más repetido hoy.
+       2. RESUMEN: 4 oraciones de análisis estratégico.
+       3. FINANZAS: Busca Dólar Blue, MEP y Oficial. 
+       REGLA DE ORO: No inventes números. No confundas "subió $10" con el precio. Solo reporta si el texto dice "cotiza a", "está en", "cerró a" o similar. Si el dato es dudoso, no lo incluyas.
        Titulares: ${titulos}`;
 
   try {
@@ -28,16 +29,18 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "Eres un analista de medios experto. Das veredictos precisos y detectas repeticiones." },
+          { role: "system", content: "Eres un analista financiero de alta precisión. Tu objetivo es la exactitud matemática. No redondees ni supongas valores que no estén escritos." },
           { role: "user", content: prompt }
         ],
-        temperature: 0.3 // Baja temperatura para mayor precisión en el veredicto
+        temperature: 0.1 // Precisión máxima para evitar errores numéricos
       })
     });
 
     const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
+    
     res.status(200).json({ resumen: data.choices[0].message.content });
   } catch (error) {
-    res.status(500).json({ error: 'Error en el proceso de análisis' });
+    res.status(500).json({ error: 'Error interno de análisis' });
   }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Veredicto IA</title>
+    <title>CENTINELA - Veredicto Total</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,31 +11,32 @@
         * { box-sizing: border-box; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Bloque Fijo Superior */
+        /* Contenedor Fijo Superior */
         .fixed-top {
             position: sticky; top: 0; background: white; z-index: 1000;
             padding: 10px; border-bottom: 2px solid var(--blue);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
         .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; }
-        #ai-resumen { font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; min-height: 45px; border-left: 3px solid var(--blue); padding-left: 12px; }
+        #ai-resumen { font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; min-height: 45px; border-left: 3px solid var(--blue); padding-left: 12px; white-space: pre-wrap; }
         
         .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
         .btn-ia { 
-            border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; 
-            font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 6px; transition: 0.2s;
+            border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; 
+            font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 8px; transition: 0.2s;
         }
         .btn-analizar { background: var(--blue); color: white; }
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Contenedor de Noticias con Scroll */
+        /* Contenedor de Noticias Deslizable */
         .scroll-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
-        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1300px; margin: auto; }
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
         .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
         .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
         .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
+        .title:hover { color: var(--blue); }
     </style>
 </head>
 <body>
@@ -43,20 +44,20 @@
     <div class="fixed-top">
         <header class="header">
             <div style="display:flex; align-items:center; gap:8px">
-                <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="18">
-                <span style="font-weight:900; color:var(--blue); font-size:0.75rem;">CENTINELA IA</span>
+                <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
+                <span style="font-weight:900; color:var(--blue); font-size:0.8rem; letter-spacing: 0.5px;">CENTINELA IA</span>
             </div>
-            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">SINCRONIZANDO...</span>
+            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">CONECTANDO...</span>
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Preparando veredicto de medios...</div>
+            <div id="ai-resumen">Sincronizando veredicto con portales en vivo...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
-                    <i data-lucide="brain-circuit" size="14"></i> ANALIZAR
+                    <i data-lucide="brain-circuit" size="16"></i> VEREDICTO TOTAL
                 </button>
                 <button id="btn-corto" class="btn-ia btn-resumir" onclick="pedirAnalisis('resumir')" disabled>
-                    <i data-lucide="zap" size="14"></i> RESUMIR
+                    <i data-lucide="zap" size="16"></i> RESUMIR
                 </button>
             </div>
         </section>
@@ -78,11 +79,11 @@
             const news = data.noticias || [];
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} NOTICIAS ANALIZADAS`;
+                document.getElementById('contador').innerText = `${news.length} NOTICIAS ACTIVAS`;
                 render(news);
                 if (!isTyping) pedirAnalisis('extenso');
             }
-        } catch (e) { console.error("Error de carga"); }
+        } catch (e) { console.error("Error de red"); }
     }
 
     async function pedirAnalisis(modo) {
@@ -90,10 +91,10 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Generando síntesis flash..." : "Comparando todos los titulares...";
+        resDiv.innerText = modo === 'resumir' ? "Generando resumen ejecutivo..." : "Comparando medios y cotizaciones...";
 
         try {
-            // Enviamos hasta 100 titulares para un análisis real y total
+            // Enviamos 100 noticias para cubrir la totalidad del panorama
             const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
@@ -101,9 +102,9 @@
                 body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
-            typeWriter(result.resumen, "ai-resumen");
+            typeWriter(result.resumen || "No se pudo generar el análisis.", "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error de conexión con la IA";
+            resDiv.innerText = "Error de conexión con la inteligencia de análisis.";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -117,7 +118,7 @@
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, 12);
+                setTimeout(type, 15);
             } else {
                 isTyping = false;
                 document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
@@ -145,7 +146,7 @@
     }
 
     monitorear();
-    setInterval(monitorear, 30000); // Revisa noticias cada 30 segundos
+    setInterval(monitorear, 45000); // Monitoreo cada 45 seg para optimizar recursos
 </script>
 </body>
 </html>
