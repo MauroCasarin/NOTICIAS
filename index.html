@@ -26,7 +26,7 @@
 
 <div class="container">
     <h1>Economía en Tiempo Real</h1>
-    <div id="loader">Cargando noticias...</div>
+    <div id="loader">Cargando noticias de hoy...</div>
     <div id="pizarra"></div>
 </div>
 
@@ -41,25 +41,29 @@
         const pizarra = document.getElementById('pizarra');
         const loader = document.getElementById('loader');
         
-        // Usamos un proxy diferente y más estable
+        // Proxy alternativo que maneja mejor el CORS en Vercel
         const proxyUrl = "https://api.allorigins.win/get?url=";
 
         for (const medio of MEDIOS) {
             try {
+                // Hacemos la petición a través del proxy
                 const response = await fetch(`${proxyUrl}${encodeURIComponent(medio.url)}`);
-                const data = await response.json();
+                if (!response.ok) throw new Error('Error en red');
                 
-                // Parseamos el XML manualmente
+                const data = await response.json();
                 const parser = new DOMParser();
+                // Allorigins devuelve el contenido en data.contents
                 const xmlDoc = parser.parseFromString(data.contents, "text/xml");
                 const items = xmlDoc.querySelectorAll("item");
 
+                if (items.length === 0) continue;
+
                 Array.from(items).slice(0, 3).forEach(item => {
-                    const titulo = item.querySelector("title").textContent;
-                    const link = item.querySelector("link").textContent;
-                    let desc = item.querySelector("description") ? item.querySelector("description").textContent : "";
+                    const titulo = item.querySelector("title")?.textContent || "Sin título";
+                    const link = item.querySelector("link")?.textContent || "#";
+                    let desc = item.querySelector("description")?.textContent || "Sin resumen disponible.";
                     
-                    // Limpiar HTML y acortar
+                    // Limpieza profunda de etiquetas HTML y acortado
                     desc = desc.replace(/<[^>]*>/g, '').substring(0, 180);
 
                     const tarjeta = document.createElement('div');
@@ -72,13 +76,14 @@
                     pizarra.appendChild(tarjeta);
                 });
             } catch (e) {
-                console.error("Error cargando " + medio.nombre, e);
+                console.warn("No se pudo cargar " + medio.nombre);
             }
         }
         loader.style.display = 'none';
     }
 
-    window.onload = cargarNoticias;
+    // Ejecutar al cargar la página
+    window.addEventListener('load', cargarNoticias);
 </script>
 
 </body>
