@@ -1,23 +1,24 @@
-// api/analyze.js
-export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).send('Método no permitido');
-  const { titulos, modo } = req.body;
-  const apiKey = process.env.NoticiasAPI; 
+async function pedirAnalisis(modo) {
+    if (ultimaData.length === 0 || isTyping) return;
+    isTyping = true;
+    document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
+    const resDiv = document.getElementById('ai-resumen');
+    resDiv.innerText = modo === 'resumir' ? "Sintetizando absolutamente todo..." : "Comparando todos los medios...";
 
-  const prompt = modo === 'resumir' 
-    ? `Dime en una sola frase de máximo 15 palabras qué es lo más importante ahora y el dato del dólar/mep si está: ${titulos}`
-    : `Analiza estos titulares: ${titulos}. 1. Identifica el tema principal y cuántas veces se repite. 2. Haz un resumen extendido de 3 a 4 oraciones. 3. Destaca información sobre cotizaciones argentinas.`;
-
-  try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
-    const data = await response.json();
-    res.status(200).json({ resumen: data.choices[0].message.content });
-  } catch (error) { res.status(500).json({ error: 'Error' }); }
+    try {
+        // Aumentamos el rango de 50 a 100 o más para cubrir TODA la pizarra
+        const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
+        
+        const resp = await fetch("/api/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ titulos, modo })
+        });
+        const result = await resp.json();
+        typeWriter(result.resumen, "ai-resumen");
+    } catch (err) {
+        resDiv.innerText = "Error en el análisis total.";
+        isTyping = false;
+        document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
+    }
 }
