@@ -3,67 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Inteligencia en Tiempo Real</title>
+    <title>CENTINELA - IA</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; --green: #10b981; --orange: #f59e0b; }
+        :root { --blue: #2563eb; --orange: #f59e0b; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
         .container { max-width: 1200px; margin: auto; }
 
-        .ai-panel { 
-            background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; 
-            padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
-        }
-        .ai-status { font-size: 0.7rem; font-weight: 800; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; display: block; }
-        #ai-resumen { font-size: 0.95rem; line-height: 1.6; color: #334155; min-height: 50px; font-weight: 500; border-left: 3px solid var(--blue); padding-left: 15px; }
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37,99,235,0.1); }
+        #ai-resumen { font-size: 1rem; line-height: 1.6; color: #334155; font-weight: 500; min-height: 50px; }
         
-        .acciones-ia { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .btn-ia {
-            background: var(--blue); color: white; border: none; padding: 10px 18px; 
-            border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: bold;
-            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+        .acciones-ia { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-ia { 
+            border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; 
+            font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 8px; transition: 0.2s;
         }
-        .btn-ia.resumen-corto { background: var(--orange); }
-        .btn-ia:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-ia:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+        .btn-analizar { background: var(--blue); color: white; }
+        .btn-resumir { background: var(--orange); color: white; }
+        .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .header { background: #ffffff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); }
-        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .diario-card { background: #ffffff; border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
-        .diario-header { font-size: 0.9rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; }
-        .noticia-row { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
-        .title { font-size: 0.85rem; font-weight: 600; color: #334155; text-decoration: none; display: block; }
-        
-        #alerta-viva { color: var(--green); font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 5px; }
-        .pulse-green { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse-g 1.5s infinite; }
-        @keyframes pulse-g { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
+        .header { background: #fff; padding: 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); margin-bottom: 15px; }
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+        .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
+        .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 5px 0; border-bottom: 1px solid #f8fafc; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <section class="ai-panel">
-        <span class="ai-status" id="ia-estado">Iniciando Monitor...</span>
-        <div id="ai-resumen">Sincronizando con los portales de noticias...</div>
-        
+        <div id="ai-resumen">Cargando inteligencia estratégica...</div>
         <div class="acciones-ia">
-            <button id="btn-extenso" class="btn-ia" onclick="pedirAnalisis('extenso')" disabled>
-                <i data-lucide="brain-circuit" style="width:16px"></i> ANALIZAR TENDENCIAS
+            <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
+                <i data-lucide="brain-circuit"></i> ANALIZAR
             </button>
-            <button id="btn-corto" class="btn-ia resumen-corto" onclick="pedirAnalisis('corto')" disabled>
-                <i data-lucide="zap" style="width:16px"></i> RESUMEN CORTO
+            <button id="btn-corto" class="btn-ia btn-resumir" onclick="pedirAnalisis('resumir')" disabled>
+                <i data-lucide="zap"></i> RESUMIR
             </button>
         </div>
     </section>
 
     <header class="header">
-        <div style="display:flex; align-items:center; gap:10px">
-            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" style="width:20px">
-            <span style="font-weight: 800; color: var(--blue); font-size: 0.9rem;">CENTINELA</span>
+        <div style="display:flex; align-items:center; gap:8px">
+            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
+            <span style="font-weight:900; color:var(--blue); font-size:0.8rem;">CENTINELA</span>
         </div>
-        <div id="alerta-viva"><div class="pulse-green"></div> VIVO</div>
-        <span id="contador" style="font-size: 0.7rem; font-weight: bold; color: #64748b;">...</span>
+        <span id="contador" style="font-size:0.7rem; font-weight:bold; color:#64748b;">CONECTANDO...</span>
     </header>
 
     <main id="pizarra" class="grid-noticias"></main>
@@ -79,25 +66,21 @@
             const res = await fetch(NEWS_API);
             const data = await res.json();
             const news = data.noticias || [];
-
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} NOTICIAS`;
+                document.getElementById('contador').innerText = `${news.length} NOTICIAS VIVAS`;
                 render(news);
-                if (!isTyping) pedirAnalisis('extenso'); 
+                if (!isTyping) pedirAnalisis('extenso');
             }
-        } catch (e) { console.error("Error"); }
+        } catch (e) {}
     }
 
     async function pedirAnalisis(modo) {
         if (ultimaData.length === 0 || isTyping) return;
-        
-        const resumenDiv = document.getElementById('ai-resumen');
-        const estadoIA = document.getElementById('ia-estado');
-        const btns = document.querySelectorAll('.btn-ia');
-
-        btns.forEach(b => b.disabled = true);
-        estadoIA.innerText = modo === 'corto' ? "Extrayendo resumen esencial..." : "Calculando frecuencia de temas...";
+        isTyping = true;
+        document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
+        const resDiv = document.getElementById('ai-resumen');
+        resDiv.innerText = modo === 'resumir' ? "Sintetizando..." : "Analizando tendencias...";
 
         try {
             const titulos = ultimaData.slice(0, 50).map(n => n.titulo).join(" | ");
@@ -107,26 +90,23 @@
                 body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
-            
-            estadoIA.innerText = modo === 'corto' ? "Resumen Flash" : "Análisis Estratégico Completo";
             typeWriter(result.resumen, "ai-resumen");
         } catch (err) {
-            estadoIA.innerText = "Error en NoticiasAPI";
-            btns.forEach(b => b.disabled = false);
+            resDiv.innerText = "Error en NoticiasAPI";
+            isTyping = false;
+            document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
     }
 
     function typeWriter(text, elementId) {
-        isTyping = true;
         let i = 0;
         const el = document.getElementById(elementId);
         el.innerHTML = "";
-        
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, 18);
+                setTimeout(type, 15);
             } else {
                 isTyping = false;
                 document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
@@ -143,19 +123,18 @@
             acc[n.fuente].push(n);
             return acc;
         }, {});
-
         for (const f in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
-            const rows = grouped[f].map(n => `<div class="noticia-row"><a href="${n.link}" target="_blank" class="title">${n.titulo}</a></div>`).join('');
-            card.innerHTML = `<div class="diario-header">${f}</div><div>${rows}</div>`;
+            const rows = grouped[f].map(n => `<a href="${n.link}" target="_blank" class="title">${n.titulo}</a>`).join('');
+            card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
             pizarra.appendChild(card);
         }
         lucide.createIcons();
     }
 
     monitorear();
-    setInterval(monitorear, 30000); 
+    setInterval(monitorear, 30000);
 </script>
 </body>
 </html>
