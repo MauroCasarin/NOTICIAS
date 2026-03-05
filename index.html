@@ -7,7 +7,7 @@
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; --green: #10b981; }
+        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; --green: #10b981; --orange: #f59e0b; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
         .container { max-width: 1200px; margin: auto; }
 
@@ -16,22 +16,23 @@
             padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
         }
         .ai-status { font-size: 0.7rem; font-weight: 800; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; display: block; }
-        #ai-resumen { font-size: 0.95rem; line-height: 1.6; color: #334155; min-height: 50px; font-weight: 500; }
+        #ai-resumen { font-size: 0.95rem; line-height: 1.6; color: #334155; min-height: 50px; font-weight: 500; border-left: 3px solid var(--blue); padding-left: 15px; }
         
         .acciones-ia { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
         .btn-ia {
-            background: var(--blue); color: white; border: none; padding: 8px 15px; 
-            border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold;
-            display: flex; align-items: center; gap: 5px; transition: opacity 0.2s;
+            background: var(--blue); color: white; border: none; padding: 10px 18px; 
+            border-radius: 8px; cursor: pointer; font-size: 0.75rem; font-weight: bold;
+            display: flex; align-items: center; gap: 6px; transition: all 0.2s;
         }
-        .btn-ia.secundario { background: #64748b; }
-        .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-ia.resumen-corto { background: var(--orange); }
+        .btn-ia:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-ia:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
 
         .header { background: #ffffff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); }
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .diario-card { background: #ffffff; border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
-        .diario-header { font-size: 0.9rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; }
-        .noticia-row { padding: 7px 0; border-bottom: 1px solid #f1f5f9; }
+        .diario-header { font-size: 0.9rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; text-transform: uppercase; }
+        .noticia-row { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
         .title { font-size: 0.85rem; font-weight: 600; color: #334155; text-decoration: none; display: block; }
         
         #alerta-viva { color: var(--green); font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 5px; }
@@ -43,15 +44,15 @@
 
 <div class="container">
     <section class="ai-panel">
-        <span class="ai-status" id="ia-estado">Iniciando Centinela...</span>
-        <div id="ai-resumen">Cargando portales...</div>
+        <span class="ai-status" id="ia-estado">Iniciando Monitor...</span>
+        <div id="ai-resumen">Sincronizando con los portales de noticias...</div>
         
         <div class="acciones-ia">
             <button id="btn-extenso" class="btn-ia" onclick="pedirAnalisis('extenso')" disabled>
-                <i data-lucide="layout-list" style="width:14px"></i> ANALIZAR NUEVAMENTE
+                <i data-lucide="brain-circuit" style="width:16px"></i> ANALIZAR TENDENCIAS
             </button>
-            <button id="btn-corto" class="btn-ia secundario" onclick="pedirAnalisis('corto')" disabled>
-                <i data-lucide="zap" style="width:14px"></i> RESUMEN CORTO
+            <button id="btn-corto" class="btn-ia resumen-corto" onclick="pedirAnalisis('corto')" disabled>
+                <i data-lucide="zap" style="width:16px"></i> RESUMEN CORTO
             </button>
         </div>
     </section>
@@ -96,7 +97,7 @@
         const btns = document.querySelectorAll('.btn-ia');
 
         btns.forEach(b => b.disabled = true);
-        estadoIA.innerText = modo === 'corto' ? "Generando resumen flash..." : "Identificando temas y cotizaciones...";
+        estadoIA.innerText = modo === 'corto' ? "Extrayendo resumen esencial..." : "Calculando frecuencia de temas...";
 
         try {
             const titulos = ultimaData.slice(0, 50).map(n => n.titulo).join(" | ");
@@ -107,7 +108,7 @@
             });
             const result = await resp.json();
             
-            estadoIA.innerText = modo === 'corto' ? "Resumen corto listo" : "Análisis estratégico finalizado";
+            estadoIA.innerText = modo === 'corto' ? "Resumen Flash" : "Análisis Estratégico Completo";
             typeWriter(result.resumen, "ai-resumen");
         } catch (err) {
             estadoIA.innerText = "Error en NoticiasAPI";
@@ -125,7 +126,7 @@
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, 15);
+                setTimeout(type, 18);
             } else {
                 isTyping = false;
                 document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);

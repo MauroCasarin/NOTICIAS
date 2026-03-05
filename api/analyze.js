@@ -5,9 +5,9 @@ export default async function handler(req, res) {
   const { titulos, modo } = req.body;
   const apiKey = process.env.NoticiasAPI; 
 
-  // Ajustamos el prompt según el botón presionado
+  // Definimos la instrucción según el modo elegido
   const prompt = modo === 'corto' 
-    ? `Analiza estos titulares y dame un resumen flash de máximo 20 palabras sobre el tema central y cotizaciones: ${titulos}`
+    ? `Analiza estos titulares y dame un resumen ejecutivo FLASH de máximo 20 palabras. Dime qué es lo más importante y si hay algún dato de dólar/mep: ${titulos}`
     : `Analiza estos titulares: ${titulos}. 1. Identifica el tema principal y cuántas veces se repite. 2. Haz un resumen extendido de 3 a 4 oraciones. 3. Destaca información sobre cotizaciones (Dólar, MEP, Blue, BCRA).`;
 
   try {
