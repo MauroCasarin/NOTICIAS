@@ -3,82 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resumen Económico Automático</title>
+    <title>Centinela Financiero - Dashboard</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: -apple-system, sans-serif; background: #edeff2; margin: 0; padding: 15px; }
+        :root { --blue: #2563eb; --blue-dark: #1e40af; --gray-bg: #f8fafc; }
+        body { font-family: -apple-system, sans-serif; background: var(--gray-bg); margin: 0; padding: 20px; color: #1e293b; }
         .container { max-width: 600px; margin: auto; }
-        h1 { text-align: center; font-size: 1.4rem; color: #1a1a1a; margin-bottom: 20px; }
-        .tarjeta { 
-            background: white; border-radius: 12px; padding: 15px; 
-            margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            border-left: 5px solid #007bff;
-        }
-        .fuente-infobae { border-left-color: #ff8000; }
-        .fuente-ambito { border-left-color: #003366; }
-        .fuente-cronista { border-left-color: #e30613; }
-        .fuente-tag { font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: #777; margin-bottom: 5px; display: block; }
-        .titulo { font-size: 1.1rem; font-weight: bold; color: #1a1a1a; text-decoration: none; display: block; margin-bottom: 8px; line-height: 1.3; }
-        .resumen { font-size: 0.95rem; color: #444; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-        #loader { text-align: center; padding: 20px; color: #666; font-weight: bold; }
+
+        /* Header Métricas */
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
+        .metric-card { background: white; padding: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); text-align: center; border-bottom: 3px solid var(--blue); }
+        .metric-label { font-size: 0.65rem; font-weight: bold; color: #64748b; text-transform: uppercase; display: block; }
+        .metric-value { font-size: 1.1rem; font-weight: bold; color: #0f172a; display: block; margin-top: 4px; }
+
+        /* Tarjetas de Noticias */
+        .feed-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 15px; display: flex; items-center; gap: 8px; }
+        .card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; overflow: hidden; transition: transform 0.2s; }
+        .card:active { transform: scale(0.98); }
+        .source-tag { font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; margin-bottom: 8px; display: inline-block; }
+        
+        /* Colores por fuente */
+        .infobae { background: #fff7ed; color: #c2410c; }
+        .ambito { background: #f0f9ff; color: #0369a1; }
+        .cronista { background: #fef2f2; color: #b91c1c; }
+
+        .title { font-size: 1.05rem; font-weight: 700; line-height: 1.4; color: #0f172a; text-decoration: none; display: block; margin-bottom: 8px; }
+        .description { font-size: 0.9rem; color: #475569; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        #loader { text-align: center; padding: 40px; color: var(--blue); font-weight: 600; }
+        .spinner { animate: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Economía en Tiempo Real</h1>
-    <div id="loader">Cargando noticias...</div>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <span class="metric-label">Blue Venta</span>
+            <span class="metric-value" id="val-blue">...</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Oficial</span>
+            <span class="metric-value" id="val-oficial">...</span>
+        </div>
+        <div class="metric-card">
+            <span class="metric-label">Riesgo País</span>
+            <span class="metric-value" id="val-riesgo">...</span>
+        </div>
+    </div>
+
+    <div class="feed-title">
+        <i data-lucide="newspaper" style="color: var(--blue)"></i> Noticias de Economía
+    </div>
+
+    <div id="loader">
+        <div class="spinner"><i data-lucide="refresh-cw"></i></div>
+        Analizando mercados...
+    </div>
+
     <div id="pizarra"></div>
 </div>
 
 <script>
     const MEDIOS = [
-        { nombre: 'Infobae', url: 'https://www.infobae.com/feeds/rss/economia', clase: 'fuente-infobae' },
-        { nombre: 'Ámbito', url: 'https://www.ambito.com/rss/mercados.xml', clase: 'fuente-ambito' },
-        { nombre: 'Cronista', url: 'https://www.cronista.com/files/rss/finanzas.xml', clase: 'fuente-cronista' }
+        { nombre: 'Infobae', url: 'https://www.infobae.com/feeds/rss/economia', clase: 'infobae' },
+        { nombre: 'Ámbito', url: 'https://www.ambito.com/rss/mercados.xml', clase: 'ambito' },
+        { nombre: 'Cronista', url: 'https://www.cronista.com/files/rss/finanzas.xml', clase: 'cronista' }
     ];
 
-    async function cargarNoticias() {
+    async function fetchData() {
+        // 1. Obtener Dólares (API directa que no suele dar CORS)
+        try {
+            const resB = await fetch('https://dolarapi.com/v1/dolares/blue');
+            const dataB = await resB.json();
+            document.getElementById('val-blue').innerText = `$${dataB.venta}`;
+
+            const resO = await fetch('https://dolarapi.com/v1/dolares/oficial');
+            const dataO = await resO.json();
+            document.getElementById('val-oficial').innerText = `$${dataO.venta}`;
+        } catch(e) { console.error("Error en dólares"); }
+
+        // 2. Obtener Noticias vía Proxy
         const pizarra = document.getElementById('pizarra');
-        const loader = document.getElementById('loader');
-        
-        // Usamos un proxy diferente y más estable
-        const proxyUrl = "https://api.allorigins.win/get?url=";
+        const proxy = "https://api.allorigins.win/get?url=";
 
         for (const medio of MEDIOS) {
             try {
-                const response = await fetch(`${proxyUrl}${encodeURIComponent(medio.url)}`);
+                const response = await fetch(`${proxy}${encodeURIComponent(medio.url)}`);
                 const data = await response.json();
-                
-                // Parseamos el XML manualmente
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(data.contents, "text/xml");
                 const items = xmlDoc.querySelectorAll("item");
 
                 Array.from(items).slice(0, 3).forEach(item => {
-                    const titulo = item.querySelector("title").textContent;
-                    const link = item.querySelector("link").textContent;
-                    let desc = item.querySelector("description") ? item.querySelector("description").textContent : "";
-                    
-                    // Limpiar HTML y acortar
-                    desc = desc.replace(/<[^>]*>/g, '').substring(0, 180);
+                    const titulo = item.querySelector("title")?.textContent;
+                    const link = item.querySelector("link")?.textContent;
+                    let desc = item.querySelector("description")?.textContent || "";
+                    desc = desc.replace(/<[^>]*>/g, '').substring(0, 150);
 
-                    const tarjeta = document.createElement('div');
-                    tarjeta.className = `tarjeta ${medio.clase}`;
-                    tarjeta.innerHTML = `
-                        <span class="fuente-tag">${medio.nombre}</span>
-                        <a href="${link}" target="_blank" class="titulo">${titulo}</a>
-                        <div class="resumen">${desc}...</div>
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    div.innerHTML = `
+                        <span class="source-tag ${medio.clase}">${medio.nombre}</span>
+                        <a href="${link}" target="_blank" class="title">${titulo}</a>
+                        <div class="description">${desc}...</div>
                     `;
-                    pizarra.appendChild(tarjeta);
+                    pizarra.appendChild(div);
                 });
-            } catch (e) {
-                console.error("Error cargando " + medio.nombre, e);
-            }
+            } catch (e) { console.warn("Error en " + medio.nombre); }
         }
-        loader.style.display = 'none';
+        
+        document.getElementById('loader').style.display = 'none';
+        lucide.createIcons(); // Activar iconos después de cargar
     }
 
-    window.onload = cargarNoticias;
+    window.onload = () => {
+        fetchData();
+        lucide.createIcons();
+    };
 </script>
 
 </body>
