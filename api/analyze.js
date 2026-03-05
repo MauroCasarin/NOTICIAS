@@ -9,14 +9,14 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Falta la Variable de Entorno: NoticiasAPI' });
   }
 
-  // Instrucciones críticas para evitar errores en las cotizaciones
+  // Lógica enfocada en repetición de temas y palabras clave
   const prompt = modo === 'resumir' 
-    ? `SINTESIS FLASH: Analiza y resume en máximo 15 palabras. Si mencionas el dólar, usa EXACTAMENTE el valor que figure en los titulares como precio de venta actual. Si no hay un precio claro, ignóralo: ${titulos}`
-    : `VEREDICTO DE MEDIOS:
-       1. TEMA CENTRAL: Qué es lo más repetido hoy.
-       2. RESUMEN: 4 oraciones de análisis estratégico.
-       3. FINANZAS: Busca Dólar Blue, MEP y Oficial. 
-       REGLA DE ORO: No inventes números. No confundas "subió $10" con el precio. Solo reporta si el texto dice "cotiza a", "está en", "cerró a" o similar. Si el dato es dudoso, no lo incluyas.
+    ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite. No hables del dólar a menos que sea el único tema presente: ${titulos}`
+    : `ANÁLISIS DE TENDENCIAS Y REPETICIONES:
+       1. TEMA DOMINANTE: ¿De qué se habla en este momento? Busca patrones, palabras o nombres propios que se repitan en 3 o más diarios diferentes.
+       2. VEREDICTO: Redacta un resumen de 4 oraciones sobre el tema más caliente, explicando qué está pasando según el volumen de noticias que coinciden.
+       3. OTROS TEMAS: Identifica una segunda tendencia que también tenga varias repeticiones.
+       4. DATOS NUMÉRICOS: Solo si aparecen datos de economía (dólar, inflación, etc.) muy claros en los titulares, menciónalos al final, pero que NO sean el centro del resumen.
        Titulares: ${titulos}`;
 
   try {
@@ -29,10 +29,10 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "Eres un analista financiero de alta precisión. Tu objetivo es la exactitud matemática. No redondees ni supongas valores que no estén escritos." },
+          { role: "system", content: "Eres un analista experto en detectar patrones y tendencias mediáticas. Tu prioridad es identificar qué temas se repiten más en los portales." },
           { role: "user", content: prompt }
         ],
-        temperature: 0.1 // Precisión máxima para evitar errores numéricos
+        temperature: 0.1 // Precisión total para no inventar temas
       })
     });
 
@@ -41,6 +41,6 @@ export default async function handler(req, res) {
     
     res.status(200).json({ resumen: data.choices[0].message.content });
   } catch (error) {
-    res.status(500).json({ error: 'Error interno de análisis' });
+    res.status(500).json({ error: 'Error de análisis' });
   }
 }

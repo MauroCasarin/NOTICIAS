@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Veredicto Total</title>
+    <title>CENTINELA - Tendencias en Vivo</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,7 +11,7 @@
         * { box-sizing: border-box; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Contenedor Fijo Superior */
+        /* Panel Fijo Superior */
         .fixed-top {
             position: sticky; top: 0; background: white; z-index: 1000;
             padding: 10px; border-bottom: 2px solid var(--blue);
@@ -30,7 +30,7 @@
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Contenedor de Noticias Deslizable */
+        /* Noticias con Scroll */
         .scroll-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
         .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
@@ -47,14 +47,14 @@
                 <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
                 <span style="font-weight:900; color:var(--blue); font-size:0.8rem; letter-spacing: 0.5px;">CENTINELA IA</span>
             </div>
-            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">CONECTANDO...</span>
+            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">ESCANEANDO...</span>
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Sincronizando veredicto con portales en vivo...</div>
+            <div id="ai-resumen">Detectando noticias más repetidas y tendencias clave...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
-                    <i data-lucide="brain-circuit" size="16"></i> VEREDICTO TOTAL
+                    <i data-lucide="brain-circuit" size="16"></i> BUSCAR TENDENCIA
                 </button>
                 <button id="btn-corto" class="btn-ia btn-resumir" onclick="pedirAnalisis('resumir')" disabled>
                     <i data-lucide="zap" size="16"></i> RESUMIR
@@ -79,11 +79,11 @@
             const news = data.noticias || [];
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} NOTICIAS ACTIVAS`;
+                document.getElementById('contador').innerText = `${news.length} TITULARES CARGADOS`;
                 render(news);
                 if (!isTyping) pedirAnalisis('extenso');
             }
-        } catch (e) { console.error("Error de red"); }
+        } catch (e) { console.error("Error"); }
     }
 
     async function pedirAnalisis(modo) {
@@ -91,10 +91,10 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Generando resumen ejecutivo..." : "Comparando medios y cotizaciones...";
+        resDiv.innerText = modo === 'resumir' ? "Buscando patrón principal..." : "Analizando qué noticias se repiten más...";
 
         try {
-            // Enviamos 100 noticias para cubrir la totalidad del panorama
+            // Enviamos 100 titulares para un análisis real
             const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
@@ -102,9 +102,9 @@
                 body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
-            typeWriter(result.resumen || "No se pudo generar el análisis.", "ai-resumen");
+            typeWriter(result.resumen || "Sin tendencia clara todavía.", "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error de conexión con la inteligencia de análisis.";
+            resDiv.innerText = "Error de conexión con la IA de análisis.";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -146,7 +146,7 @@
     }
 
     monitorear();
-    setInterval(monitorear, 45000); // Monitoreo cada 45 seg para optimizar recursos
+    setInterval(monitorear, 45000); // Monitoreo cada 45 seg
 </script>
 </body>
 </html>
