@@ -3,77 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Feed Optimizado</title>
+    <title>CENTINELA - Feed de Noticias</title>
+    
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
+    
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
-        .container { max-width: 1000px; margin: auto; }
+        .container { max-width: 1200px; margin: auto; }
 
-        /* Header Optimizado */
+        /* Header con Favicon */
         .header { 
             background: #ffffff; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .feed-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--blue); }
-        #contador-total { font-size: 0.75rem; font-weight: bold; color: #64748b; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .favicon-img { width: 20px; height: 20px; border-radius: 4px; }
+        .feed-title { font-size: 0.9rem; font-weight: 800; text-transform: uppercase; color: var(--blue); letter-spacing: 0.5px; }
 
-        /* Grid Multicolumna */
+        /* Grid Multicolumna Optimizado */
         .grid-noticias { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
             gap: 20px; 
         }
 
-        /* Contenedor de Diario */
         .diario-card { 
-            background: #ffffff; border-radius: 10px; padding: 10px; 
-            border: 1px solid var(--border);
+            background: #ffffff; border-radius: 12px; padding: 15px; 
+            border: 1px solid var(--border); transition: box-shadow 0.3s;
         }
+        .diario-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
         .diario-header { 
-            font-size: 0.95rem; font-weight: 800; color: var(--blue); 
-            border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px;
-            display: flex; justify-content: space-between;
+            font-size: 1rem; font-weight: 800; color: var(--blue); 
+            border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        /* Fila de Noticia Optimizado para lectura de datos */
-        .noticia-row { 
-            padding: 8px 0; border-bottom: 1px solid #f1f5f9; 
-        }
+        /* Filas de Noticias con Atributos de Datos */
+        .noticia-row { padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
         .noticia-row:last-child { border-bottom: none; }
         
         .title { 
-            font-size: 0.9rem; font-weight: 600; line-height: 1.4; 
+            font-size: 0.92rem; font-weight: 600; line-height: 1.4; 
             color: #334155; text-decoration: none; display: block; 
         }
-        .title:hover { color: var(--blue); }
+        .title:hover { color: var(--blue); text-decoration: underline; }
 
-        /* Tags de tiempo */
-        .time-tag { font-size: 0.7rem; color: #94a3b8; margin-bottom: 4px; display: block; }
+        .time-tag { font-size: 0.7rem; color: #94a3b8; margin-bottom: 4px; display: block; font-weight: 500; }
         
-        #loader { text-align: center; padding: 50px; color: var(--blue); font-weight: bold; }
+        #loader { text-align: center; padding: 60px; color: var(--blue); font-weight: bold; }
         .spin { animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        #contador-total { font-size: 0.75rem; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <i data-lucide="zap" style="width: 16px; fill: var(--blue);"></i>
-            <span class="feed-title">Terminal de Medios</span>
+    <header class="header">
+        <div class="brand">
+            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" class="favicon-img" alt="logo">
+            <span class="feed-title">Centinela Financiero</span>
         </div>
-        <span id="contador-total">0 noticias cargadas</span>
-    </div>
+        <span id="contador-total">Sincronizando...</span>
+    </header>
 
     <div id="loader">
-        <div class="spin"><i data-lucide="refresh-cw"></i></div>
-        <p>Sincronizando todas las fuentes...</p>
+        <div class="spin"><i data-lucide="refresh-cw" size="32"></i></div>
+        <p>Cargando flujo total de noticias...</p>
     </div>
 
-    <div id="pizarra" class="grid-noticias"></div>
+    <main id="pizarra" class="grid-noticias"></main>
 </div>
 
 <script>
@@ -85,12 +90,13 @@
             const data = await response.json();
             const news = data.noticias || [];
 
-            document.getElementById('contador-total').innerText = `${news.length} noticias totales`;
+            document.getElementById('contador-total').innerText = `${news.length} NOTICIAS`;
             document.getElementById('loader').style.display = 'none';
             
             render(news);
         } catch (e) {
-            console.error("Error en la descarga de datos.");
+            console.error("Error al obtener datos");
+            document.getElementById('contador-total').innerText = "ERROR DE CARGA";
         }
     }
 
@@ -107,15 +113,14 @@
         for (const source in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
-            card.setAttribute('data-fuente-container', source);
             
-            // Generamos las filas incluyendo "data-attributes" para que otros scripts lean la data fácil
+            // Incluimos data-attributes para optimizar scripts externos
             const rows = grouped[source].map(n => `
                 <article class="noticia-row" 
                          data-fuente="${n.fuente}" 
                          data-titulo="${n.titulo}" 
                          data-link="${n.link}">
-                    <span class="time-tag">Hoy • ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    <span class="time-tag">ACTUALIZADO: ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     <a href="${n.link}" target="_blank" class="title">${n.titulo}</a>
                 </article>
             `).join('');
@@ -123,7 +128,7 @@
             card.innerHTML = `
                 <div class="diario-header">
                     <span>${source}</span>
-                    <span style="font-size: 0.7rem; opacity: 0.5;">${grouped[source].length}</span>
+                    <i data-lucide="chevron-right" size="14" style="opacity: 0.4"></i>
                 </div>
                 <div class="noticias-list">
                     ${rows}
@@ -134,7 +139,7 @@
         lucide.createIcons();
     }
 
-    // Ejecución inicial y refresco cada 60 segundos
+    // Inicialización y auto-refresco cada 60 segundos
     fetchData();
     setInterval(fetchData, 60000);
 </script>
