@@ -3,169 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Inteligencia de Medios</title>
-    
+    <title>CENTINELA - Inteligencia Estratégica</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
-    
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; --green: #10b981; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
+        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; }
+        body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
         .container { max-width: 1200px; margin: auto; }
 
-        /* Panel Superior de IA (Seguro) */
+        /* Panel Superior IA */
         .ai-panel { 
             background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; 
-            padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+            padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
         }
-        .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
-        .ai-title { font-size: 0.75rem; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 0.5px; }
-        #ai-resumen { font-size: 0.95rem; line-height: 1.5; color: #334155; font-weight: 600; }
+        .ai-status { font-size: 0.7rem; font-weight: 800; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; display: block; }
+        #ai-resumen { font-size: 1rem; line-height: 1.6; color: #334155; }
+        .paso-ia { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #64748b; margin-top: 5px; }
 
-        /* Cabecera Principal */
-        .header { 
-            background: #ffffff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; 
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue);
-        }
-        .brand { display: flex; align-items: center; gap: 10px; }
-        .favicon-img { width: 22px; height: 22px; }
-        
-        #contador { font-size: 0.7rem; font-weight: bold; color: #64748b; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; }
+        .header { background: #ffffff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); }
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .diario-card { background: #ffffff; border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
+        .diario-header { font-size: 1rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; }
+        .noticia-row { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+        .title { font-size: 0.88rem; font-weight: 600; color: #334155; text-decoration: none; display: block; }
 
-        /* Grid de Noticias Multicolumna */
-        .grid-noticias { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 20px; 
-        }
-
-        .diario-card { background: #ffffff; border-radius: 12px; padding: 15px; border: 1px solid var(--border); transition: border-color 0.2s; }
-        .diario-card:hover { border-color: var(--blue); }
-        
-        .diario-header { 
-            font-size: 1rem; font-weight: 800; color: var(--blue); 
-            border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px;
-        }
-
-        .noticia-row { padding: 9px 0; border-bottom: 1px solid #f1f5f9; }
-        .noticia-row:last-child { border-bottom: none; }
-        .title { font-size: 0.88rem; font-weight: 600; color: #334155; text-decoration: none; display: block; line-height: 1.4; }
-        .title:hover { color: var(--blue); text-decoration: underline; }
-
-        /* Animaciones de Carga */
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        
-        #loader-main { text-align: center; padding: 60px; color: var(--blue); font-weight: bold; }
-        .spin { animation: spin 1s linear infinite; display: inline-block; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .loading-dots:after { content: '.'; animation: dots 1.5s steps(5, end) infinite; }
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } 80% { content: ''; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <section class="ai-panel">
-        <div class="ai-header">
-            <i data-lucide="brain-circuit" style="color: var(--blue); width: 16px;"></i>
-            <span class="ai-title">Análisis de Tendencias (Protegido)</span>
-        </div>
-        <div id="ai-resumen" class="animate-pulse">Analizando los titulares más relevantes...</div>
+        <span class="ai-status" id="ia-estado">Esperando carga de noticias...</span>
+        <div id="ai-resumen">Las noticias se están sincronizando para iniciar el análisis.</div>
+        <div id="ia-pasos" class="paso-ia"></div>
     </section>
 
     <header class="header">
-        <div class="brand">
-            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" class="favicon-img" alt="logo">
-            <span style="font-weight: 800; color: var(--blue); font-size: 0.95rem; text-transform: uppercase;">Centinela</span>
+        <div style="display:flex; align-items:center; gap:10px">
+            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" style="width:20px">
+            <span style="font-weight: 800; color: var(--blue); font-size: 0.95rem;">CENTINELA</span>
         </div>
-        <span id="contador">Sincronizando fuentes...</span>
+        <span id="contador" style="font-size: 0.7rem; font-weight: bold; color: #64748b;">Iniciando...</span>
     </header>
-
-    <div id="loader-main">
-        <div class="spin"><i data-lucide="refresh-cw" size="32"></i></div>
-        <p>Actualizando flujo de noticias...</p>
-    </div>
 
     <main id="pizarra" class="grid-noticias"></main>
 </div>
 
 <script>
-    // Endpoint de tu Google Apps Script
     const NEWS_API = "https://script.google.com/macros/s/AKfycbyRzAtQjhLexPaatkpxGCgq6dfLzp7R6-xO0zvComD3gg1CJbODXaZdqUe5GX9zi0lP4A/exec";
 
-    async function actualizarDashboard() {
+    async function iniciar() {
+        const resumenDiv = document.getElementById('ai-resumen');
+        const estadoIA = document.getElementById('ia-estado');
+        
         try {
-            const response = await fetch(NEWS_API);
-            const data = await response.json();
+            // PASO 1: Cargar Noticias
+            const res = await fetch(NEWS_API);
+            const data = await res.json();
             const news = data.noticias || [];
-
-            document.getElementById('contador').innerText = `${news.length} NOTICIAS`;
-            document.getElementById('loader-main').style.display = 'none';
             
-            renderNoticias(news);
-            solicitarAnalisisIA(news);
+            document.getElementById('contador').innerText = `${news.length} NOTICIAS CARGADAS`;
+            render(news);
+
+            // PASO 2: Iniciar Fase de Análisis (después de cargar visualmente)
+            estadoIA.innerText = "Fase 1: Analizando patrones de repetición";
+            resumenDiv.innerHTML = '<span class="loading-dots">Procesando todos los titulares para identificar tendencias</span>';
+            
+            await ejecutarIA(news);
+
         } catch (e) {
-            document.getElementById('contador').innerText = "ERROR DE CONEXIÓN";
+            estadoIA.innerText = "Error de conexión";
+            resumenDiv.innerText = "No se pudieron cargar las noticias.";
         }
     }
 
-    async function solicitarAnalisisIA(news) {
+    async function ejecutarIA(news) {
         const resumenDiv = document.getElementById('ai-resumen');
-        // Enviamos los primeros 35 titulares para procesar la tendencia
-        const titulos = news.slice(0, 35).map(n => n.titulo).join(" | ");
+        const estadoIA = document.getElementById('ia-estado');
+        
+        // Enviamos un lote mayor para un resumen más extenso
+        const titulos = news.slice(0, 50).map(n => n.titulo).join(" | ");
 
         try {
-            // Llamada segura a la API interna de Vercel (no expone la clave)
+            estadoIA.innerText = "Fase 2: Redactando resumen estratégico";
+            
             const resp = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ titulos: titulos })
+                body: JSON.stringify({ titulos })
             });
             const result = await resp.json();
             
-            resumenDiv.classList.remove('animate-pulse');
-            resumenDiv.innerHTML = `<i data-lucide="trending-up" style="width:14px; color:var(--green); display:inline; margin-right:5px"></i> ${result.resumen || "Análisis completado."}`;
-            lucide.createIcons();
+            estadoIA.innerText = "Análisis Finalizado";
+            resumenDiv.innerHTML = `<strong>Resumen de Medios:</strong><br>${result.resumen}`;
         } catch (err) {
-            resumenDiv.innerText = "Esperando actualización de NoticiasAPI segura...";
+            estadoIA.innerText = "Análisis fallido";
+            resumenDiv.innerText = "Hubo un problema al conectar con la Inteligencia Artificial.";
         }
     }
 
-    function renderNoticias(news) {
+    function render(news) {
         const pizarra = document.getElementById('pizarra');
         pizarra.innerHTML = '';
-
-        // Agrupación por fuente (diario)
-        const agrupadas = news.reduce((acc, noticia) => {
-            const fuente = noticia.fuente || "Otras Fuentes";
-            if (!acc[fuente]) acc[fuente] = [];
-            acc[fuente].push(noticia);
+        const grouped = news.reduce((acc, n) => {
+            acc[n.fuente] = acc[n.fuente] || [];
+            acc[n.fuente].push(n);
             return acc;
         }, {});
 
-        for (const diario in agrupadas) {
+        for (const f in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
-            
-            const htmlNoticias = agrupadas[diario].map(n => `
-                <article class="noticia-row">
-                    <a href="${n.link}" target="_blank" class="title">${n.titulo}</a>
-                </article>
-            `).join('');
-
-            card.innerHTML = `
-                <div class="diario-header">${diario}</div>
-                <div>${htmlNoticias}</div>
-            `;
+            const rows = grouped[f].map(n => `<div class="noticia-row"><a href="${n.link}" target="_blank" class="title">${n.titulo}</a></div>`).join('');
+            card.innerHTML = `<div class="diario-header">${f}</div><div>${rows}</div>`;
             pizarra.appendChild(card);
         }
         lucide.createIcons();
     }
 
-    // Inicio y auto-refresco cada 60 segundos
-    actualizarDashboard();
-    setInterval(actualizarDashboard, 60000);
+    iniciar();
+    setInterval(iniciar, 300000); // Actualiza cada 5 minutos para no saturar la IA
 </script>
-
 </body>
 </html>
