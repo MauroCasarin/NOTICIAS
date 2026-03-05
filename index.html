@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centinela Financiero - Dashboard</title>
+    <title>Centinela Financiero - Noticias</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --blue: #2563eb; --gray-bg: #f8fafc; }
@@ -16,7 +16,7 @@
         }
         .feed-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; text-transform: uppercase; }
 
-        /* Tarjetas estilo NewsFeed.tsx */
+        /* Tarjetas estilo Dashboard */
         .card { 
             background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid #e2e8f0;
@@ -27,7 +27,7 @@
         .source-tag { 
             font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; 
             text-transform: uppercase; margin-bottom: 8px; display: inline-block;
-            background: #f1f5f9; color: #475569;
+            background: #e0f2fe; color: #0369a1; /* Estilo Ámbito/Economía */
         }
 
         .title { 
@@ -44,21 +44,21 @@
 
 <div class="container">
     <div class="feed-header">
-        <i data-lucide="newspaper"></i>
-        <span class="feed-title">Central de Noticias</span>
+        <i data-lucide="newspaper" style="color: var(--blue)"></i>
+        <span class="feed-title">Central de Noticias Económicas</span>
     </div>
 
     <div id="loader">
         <div class="spinner"><i data-lucide="refresh-cw"></i></div>
-        <p>Conectando con Google Script...</p>
+        <p>Sincronizando con Google Apps Script...</p>
     </div>
 
     <div id="pizarra"></div>
 </div>
 
 <script>
-    // PEGA AQUÍ LA URL QUE TE DIO GOOGLE APPS SCRIPT
-    const WEB_APP_URL = "TU_URL_DE_GOOGLE_APPS_SCRIPT";
+    // URL que proporcionaste
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRzAtQjhLexPaatkpxGCgq6dfLzp7R6-xO0zvComD3gg1CJbODXaZdqUe5GX9zi0lP4A/exec";
 
     async function cargarNoticias() {
         const pizarra = document.getElementById('pizarra');
@@ -68,7 +68,7 @@
             const response = await fetch(WEB_APP_URL);
             const data = await response.json();
 
-            // Tu script devuelve data.noticias
+            // El script devuelve el objeto { noticias: [...] }
             if (data.noticias && data.noticias.length > 0) {
                 data.noticias.forEach(noticia => {
                     const card = document.createElement('div');
@@ -80,11 +80,11 @@
                     pizarra.appendChild(card);
                 });
             } else {
-                pizarra.innerHTML = "<p>No se encontraron noticias en este momento.</p>";
+                pizarra.innerHTML = "<p style='text-align:center'>No hay noticias disponibles.</p>";
             }
         } catch (e) {
             console.error(e);
-            pizarra.innerHTML = "<p>Error al conectar con el servidor de Google.</p>";
+            pizarra.innerHTML = "<p style='text-align:center; color:red'>Error al conectar con el script de noticias.</p>";
         } finally {
             loader.style.display = 'none';
             lucide.createIcons();
