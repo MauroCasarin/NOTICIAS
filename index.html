@@ -3,58 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Full Feed</title>
+    <title>CENTINELA - Feed Optimizado</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --blue: #2563eb; --bg: #0f172a; --card-bg: #1e293b; --text: #f1f5f9; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--text); }
-        .container { max-width: 1200px; margin: auto; }
+        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; }
+        body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
+        .container { max-width: 1000px; margin: auto; }
 
-        /* Header Fijo para control */
+        /* Header Optimizado */
         .header { 
-            background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(10px);
-            padding: 10px 20px; border-radius: 12px; margin-bottom: 15px; 
+            background: #ffffff; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; 
             display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 10px; z-index: 100; border: 1px solid #334155;
+            position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue);
         }
-        .feed-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--blue); }
-        #contador-total { background: var(--blue); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.7rem; }
+        .feed-title { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--blue); }
+        #contador-total { font-size: 0.75rem; font-weight: bold; color: #64748b; }
 
-        /* Grid Multicolumna para PC, una sola para móvil */
+        /* Grid Multicolumna */
         .grid-noticias { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 15px; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 20px; 
         }
 
+        /* Contenedor de Diario */
         .diario-card { 
-            background: var(--card-bg); border-radius: 12px; padding: 15px; 
-            border: 1px solid #334155; height: fit-content;
+            background: #ffffff; border-radius: 10px; padding: 10px; 
+            border: 1px solid var(--border);
         }
         .diario-header { 
-            font-size: 0.9rem; font-weight: 800; color: #60a5fa; 
-            border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 10px;
+            font-size: 0.95rem; font-weight: 800; color: var(--blue); 
+            border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-bottom: 10px;
             display: flex; justify-content: space-between;
         }
 
-        /* Lista de noticias sin fin */
+        /* Fila de Noticia Optimizado para lectura de datos */
         .noticia-row { 
-            padding: 8px 0; border-bottom: 1px solid #334155; 
-            display: flex; gap: 8px; align-items: flex-start;
+            padding: 8px 0; border-bottom: 1px solid #f1f5f9; 
         }
         .noticia-row:last-child { border-bottom: none; }
-        .dot { width: 4px; height: 4px; background: var(--blue); border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
         
         .title { 
-            font-size: 0.82rem; font-weight: 500; line-height: 1.3; 
-            color: #cbd5e1; text-decoration: none; display: block; 
+            font-size: 0.9rem; font-weight: 600; line-height: 1.4; 
+            color: #334155; text-decoration: none; display: block; 
         }
-        .title:hover { color: white; }
+        .title:hover { color: var(--blue); }
 
-        .update-tag { font-size: 0.6rem; color: #64748b; margin-top: 10px; text-align: center; }
+        /* Tags de tiempo */
+        .time-tag { font-size: 0.7rem; color: #94a3b8; margin-bottom: 4px; display: block; }
         
-        /* Animación de carga */
-        #loader { text-align: center; padding: 100px; color: var(--blue); }
+        #loader { text-align: center; padding: 50px; color: var(--blue); font-weight: bold; }
         .spin { animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     </style>
@@ -63,43 +61,36 @@
 
 <div class="container">
     <div class="header">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <i data-lucide="rss" style="width: 16px;"></i>
-            <span class="feed-title">Flujo Total de Medios</span>
-            <span id="contador-total">0 noticias</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i data-lucide="zap" style="width: 16px; fill: var(--blue);"></i>
+            <span class="feed-title">Terminal de Medios</span>
         </div>
-        <div id="status" style="font-size: 0.6rem; color: #64748b;">Sincronizando...</div>
+        <span id="contador-total">0 noticias cargadas</span>
     </div>
 
     <div id="loader">
-        <div class="spin"><i data-lucide="refresh-cw" size="32"></i></div>
-        <p>Procesando más de 15 portales...</p>
+        <div class="spin"><i data-lucide="refresh-cw"></i></div>
+        <p>Sincronizando todas las fuentes...</p>
     </div>
 
     <div id="pizarra" class="grid-noticias"></div>
-    
-    <div class="update-tag">
-        Auto-update activo cada 60s • <span id="clock">--:--</span>
-    </div>
 </div>
 
 <script>
     const API = "https://script.google.com/macros/s/AKfycbyRzAtQjhLexPaatkpxGCgq6dfLzp7R6-xO0zvComD3gg1CJbODXaZdqUe5GX9zi0lP4A/exec";
 
-    async function streamNoticias() {
+    async function fetchData() {
         try {
             const response = await fetch(API);
             const data = await response.json();
             const news = data.noticias || [];
 
-            document.getElementById('contador-total').innerText = `${news.length} noticias`;
+            document.getElementById('contador-total').innerText = `${news.length} noticias totales`;
             document.getElementById('loader').style.display = 'none';
-            document.getElementById('status').innerText = "EN VIVO";
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-
+            
             render(news);
         } catch (e) {
-            document.getElementById('status').innerText = "ERROR DE CONEXIÓN";
+            console.error("Error en la descarga de datos.");
         }
     }
 
@@ -107,39 +98,45 @@
         const pizarra = document.getElementById('pizarra');
         pizarra.innerHTML = '';
 
-        // Agrupar todas las noticias por fuente
         const grouped = news.reduce((acc, n) => {
             if (!acc[n.fuente]) acc[n.fuente] = [];
             acc[n.fuente].push(n);
             return acc;
         }, {});
 
-        // Crear una tarjeta por cada diario, mostrando TODAS sus noticias
         for (const source in grouped) {
-            const card = document.createElement('div');
+            const card = document.createElement('section');
             card.className = 'diario-card';
+            card.setAttribute('data-fuente-container', source);
             
+            // Generamos las filas incluyendo "data-attributes" para que otros scripts lean la data fácil
             const rows = grouped[source].map(n => `
-                <div class="noticia-row">
-                    <div class="dot"></div>
+                <article class="noticia-row" 
+                         data-fuente="${n.fuente}" 
+                         data-titulo="${n.titulo}" 
+                         data-link="${n.link}">
+                    <span class="time-tag">Hoy • ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     <a href="${n.link}" target="_blank" class="title">${n.titulo}</a>
-                </div>
+                </article>
             `).join('');
 
             card.innerHTML = `
                 <div class="diario-header">
                     <span>${source}</span>
-                    <span style="font-size: 0.6rem; opacity: 0.6">${grouped[source].length}</span>
+                    <span style="font-size: 0.7rem; opacity: 0.5;">${grouped[source].length}</span>
                 </div>
-                ${rows}
+                <div class="noticias-list">
+                    ${rows}
+                </div>
             `;
             pizarra.appendChild(card);
         }
         lucide.createIcons();
     }
 
-    streamNoticias();
-    setInterval(streamNoticias, 60000);
+    // Ejecución inicial y refresco cada 60 segundos
+    fetchData();
+    setInterval(fetchData, 60000);
 </script>
 
 </body>
