@@ -3,58 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - IA</title>
+    <title>CENTINELA - IA Control</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --blue: #2563eb; --orange: #f59e0b; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; }
-        body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
-        .container { max-width: 1200px; margin: auto; }
-
-        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37,99,235,0.1); }
-        #ai-resumen { font-size: 1rem; line-height: 1.6; color: #334155; font-weight: 500; min-height: 50px; }
         
-        .acciones-ia { display: flex; gap: 10px; margin-top: 15px; }
+        /* Reset y estructura base */
+        * { box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* CONTENEDOR FIJO ARRIBA (IA y Header) */
+        .fixed-top {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1000;
+            padding: 10px;
+            border-bottom: 2px solid var(--blue);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
+        #ai-resumen { font-size: 0.95rem; line-height: 1.5; color: #334155; font-weight: 500; min-height: 40px; border-left: 3px solid var(--blue); padding-left: 12px; }
+        
+        .acciones-ia { display: flex; gap: 8px; margin-top: 10px; }
         .btn-ia { 
-            border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; 
-            font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 8px; transition: 0.2s;
+            border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; 
+            font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 6px; transition: 0.2s;
         }
         .btn-analizar { background: var(--blue); color: white; }
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .header { background: #fff; padding: 12px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); margin-bottom: 15px; }
-        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 5px 5px 0 5px; }
+
+        /* CONTENEDOR DE NOTICIAS CON SCROLL PROPIO */
+        .scroll-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 10px;
+            background: #ffffff;
+        }
+
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1200px; margin: auto; }
+        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; }
         .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
-        .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 5px 0; border-bottom: 1px solid #f8fafc; }
+        .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
+        .title:hover { color: var(--blue); }
+
+        /* Estilo para móvil */
+        @media (max-width: 600px) {
+            #ai-resumen { font-size: 0.85rem; }
+            .btn-ia { padding: 6px 10px; font-size: 0.65rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <section class="ai-panel">
-        <div id="ai-resumen">Cargando inteligencia estratégica...</div>
-        <div class="acciones-ia">
-            <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
-                <i data-lucide="brain-circuit"></i> ANALIZAR
-            </button>
-            <button id="btn-corto" class="btn-ia btn-resumir" onclick="pedirAnalisis('resumir')" disabled>
-                <i data-lucide="zap"></i> RESUMIR
-            </button>
-        </div>
-    </section>
+    <div class="fixed-top">
+        <header class="header">
+            <div style="display:flex; align-items:center; gap:8px">
+                <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="18">
+                <span style="font-weight:900; color:var(--blue); font-size:0.75rem;">CENTINELA IA</span>
+            </div>
+            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">CONECTANDO...</span>
+        </header>
 
-    <header class="header">
-        <div style="display:flex; align-items:center; gap:8px">
-            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
-            <span style="font-weight:900; color:var(--blue); font-size:0.8rem;">CENTINELA</span>
-        </div>
-        <span id="contador" style="font-size:0.7rem; font-weight:bold; color:#64748b;">CONECTANDO...</span>
-    </header>
+        <section class="ai-panel">
+            <div id="ai-resumen">Iniciando análisis estratégico...</div>
+            <div class="acciones-ia">
+                <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
+                    <i data-lucide="brain-circuit" size="14"></i> ANALIZAR
+                </button>
+                <button id="btn-corto" class="btn-ia btn-resumir" onclick="pedirAnalisis('resumir')" disabled>
+                    <i data-lucide="zap" size="14"></i> RESUMIR
+                </button>
+            </div>
+        </section>
+    </div>
 
-    <main id="pizarra" class="grid-noticias"></main>
-</div>
+    <main class="scroll-content">
+        <div id="pizarra" class="grid-noticias"></div>
+    </main>
 
 <script>
     const NEWS_API = "https://script.google.com/macros/s/AKfycbyRzAtQjhLexPaatkpxGCgq6dfLzp7R6-xO0zvComD3gg1CJbODXaZdqUe5GX9zi0lP4A/exec";
@@ -68,7 +99,7 @@
             const news = data.noticias || [];
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} NOTICIAS VIVAS`;
+                document.getElementById('contador').innerText = `${news.length} NOTICIAS ACTIVAS`;
                 render(news);
                 if (!isTyping) pedirAnalisis('extenso');
             }
@@ -80,7 +111,7 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Sintetizando..." : "Analizando tendencias...";
+        resDiv.innerText = modo === 'resumir' ? "Sintetizando información..." : "Procesando tendencias...";
 
         try {
             const titulos = ultimaData.slice(0, 50).map(n => n.titulo).join(" | ");
@@ -92,7 +123,7 @@
             const result = await resp.json();
             typeWriter(result.resumen, "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error en NoticiasAPI";
+            resDiv.innerText = "Error de conexión con NoticiasAPI";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -106,7 +137,7 @@
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, 15);
+                setTimeout(type, 12);
             } else {
                 isTyping = false;
                 document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
