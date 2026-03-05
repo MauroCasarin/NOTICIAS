@@ -14,17 +14,18 @@
         .ai-panel { 
             background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; 
             padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
-            position: relative;
         }
         .ai-status { font-size: 0.7rem; font-weight: 800; color: var(--blue); text-transform: uppercase; margin-bottom: 10px; display: block; }
-        #ai-resumen { font-size: 0.95rem; line-height: 1.6; color: #334155; min-height: 60px; }
+        #ai-resumen { font-size: 0.95rem; line-height: 1.6; color: #334155; min-height: 50px; font-weight: 500; }
         
-        .btn-analizar {
+        .acciones-ia { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-ia {
             background: var(--blue); color: white; border: none; padding: 8px 15px; 
-            border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;
-            display: flex; align-items: center; gap: 5px; margin-top: 15px;
+            border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold;
+            display: flex; align-items: center; gap: 5px; transition: opacity 0.2s;
         }
-        .btn-analizar:disabled { background: #cbd5e1; cursor: not-allowed; }
+        .btn-ia.secundario { background: #64748b; }
+        .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .header { background: #ffffff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); }
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
@@ -42,11 +43,17 @@
 
 <div class="container">
     <section class="ai-panel">
-        <span class="ai-status" id="ia-estado">Iniciando sistema...</span>
-        <div id="ai-resumen">Cargando portales para iniciar análisis estratégico...</div>
-        <button id="btn-re-analizar" class="btn-analizar" onclick="forzarAnalisis()" disabled>
-            <i data-lucide="refresh-cw" style="width:14px"></i> ANALIZAR NUEVAMENTE
-        </button>
+        <span class="ai-status" id="ia-estado">Iniciando Centinela...</span>
+        <div id="ai-resumen">Cargando portales...</div>
+        
+        <div class="acciones-ia">
+            <button id="btn-extenso" class="btn-ia" onclick="pedirAnalisis('extenso')" disabled>
+                <i data-lucide="layout-list" style="width:14px"></i> ANALIZAR NUEVAMENTE
+            </button>
+            <button id="btn-corto" class="btn-ia secundario" onclick="pedirAnalisis('corto')" disabled>
+                <i data-lucide="zap" style="width:14px"></i> RESUMEN CORTO
+            </button>
+        </div>
     </section>
 
     <header class="header">
@@ -72,48 +79,45 @@
             const data = await res.json();
             const news = data.noticias || [];
 
-            // Comparar si hay noticias nuevas para renderizar
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
                 document.getElementById('contador').innerText = `${news.length} NOTICIAS`;
                 render(news);
-                if (!isTyping) forzarAnalisis(); 
+                if (!isTyping) pedirAnalisis('extenso'); 
             }
-        } catch (e) { console.error("Error de red"); }
+        } catch (e) { console.error("Error"); }
     }
 
-    async function forzarAnalisis() {
+    async function pedirAnalisis(modo) {
         if (ultimaData.length === 0 || isTyping) return;
         
         const resumenDiv = document.getElementById('ai-resumen');
         const estadoIA = document.getElementById('ia-estado');
-        const btn = document.getElementById('btn-re-analizar');
+        const btns = document.querySelectorAll('.btn-ia');
 
-        btn.disabled = true;
-        estadoIA.innerText = "Fase 1: Identificando repeticiones y cotizaciones...";
-        resumenDiv.innerText = "Escaneando titulares...";
+        btns.forEach(b => b.disabled = true);
+        estadoIA.innerText = modo === 'corto' ? "Generando resumen flash..." : "Identificando temas y cotizaciones...";
 
         try {
             const titulos = ultimaData.slice(0, 50).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ titulos })
+                body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
             
-            estadoIA.innerText = "Análisis Estratégico Finalizado";
+            estadoIA.innerText = modo === 'corto' ? "Resumen corto listo" : "Análisis estratégico finalizado";
             typeWriter(result.resumen, "ai-resumen");
         } catch (err) {
             estadoIA.innerText = "Error en NoticiasAPI";
-            btn.disabled = false;
+            btns.forEach(b => b.disabled = false);
         }
     }
 
     function typeWriter(text, elementId) {
         isTyping = true;
         let i = 0;
-        const speed = 20; // Velocidad en ms
         const el = document.getElementById(elementId);
         el.innerHTML = "";
         
@@ -121,10 +125,10 @@
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
                 i++;
-                setTimeout(type, speed);
+                setTimeout(type, 15);
             } else {
                 isTyping = false;
-                document.getElementById('btn-re-analizar').disabled = false;
+                document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
             }
         }
         type();
@@ -149,7 +153,6 @@
         lucide.createIcons();
     }
 
-    // Monitoreo constante cada 30 segundos para noticias nuevas
     monitorear();
     setInterval(monitorear, 30000); 
 </script>
