@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CENTINELA - NoticiasAPI</title>
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root { --blue: #2563eb; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; --green: #10b981; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #ffffff; margin: 0; padding: 10px; color: var(--text); }
+        .container { max-width: 1200px; margin: auto; }
+
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .ai-title { font-size: 0.7rem; font-weight: 800; color: var(--blue); text-transform: uppercase; }
+        #ai-resumen { font-size: 0.95rem; font-weight: 600; color: #334155; }
+
+        .header { background: #ffffff; padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--blue); }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        #alerta-nuevas { background: var(--green); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; display: none; }
+
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .diario-card { background: #ffffff; border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
+        .diario-header { font-size: 1rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 12px; }
+
+        .noticia-row { padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+        .title { font-size: 0.88rem; font-weight: 600; color: #334155; text-decoration: none; display: block; }
+        
+        .animate-pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="ai-panel">
+        <div class="ai-header">
+            <i data-lucide="brain-circuit" style="width: 14px; color: var(--blue);"></i>
+            <span class="ai-title">Análisis NoticiasAPI (Vercel Secure)</span>
+        </div>
+        <div id="ai-resumen" class="animate-pulse">Esperando datos...</div>
+    </div>
+
+    <header class="header">
+        <div class="brand">
+            <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" style="width:20px" alt="logo">
+            <span style="font-weight: 800; color: var(--blue); font-size: 0.9rem;">CENTINELA</span>
+        </div>
+        <div id="alerta-nuevas"></div>
+        <span id="contador" style="font-size: 0.7rem; font-weight: bold; color: #64748b;">Conectando...</span>
+    </header>
+
+    <main id="pizarra" class="grid-noticias"></main>
+</div>
+
+<script>
+    const NEWS_API = "https://script.google.com/macros/s/AKfycbyRzAtQjhLexPaatkpxGCgq6dfLzp7R6-xO0zvComD3gg1CJbODXaZdqUe5GX9zi0lP4A/exec";
+    let cacheLinks = new Set();
+
+    async function monitorear() {
+        try {
+            const res = await fetch(NEWS_API);
+            const data = await res.json();
+            const news = data.noticias || [];
+
+            const nuevas = news.filter(n => !cacheLinks.has(n.link));
+            if (nuevas.length > 0 && cacheLinks.size > 0) {
+                document.getElementById('alerta-nuevas').innerText = `+${nuevas.length} NOTICIAS`;
+                document.getElementById('alerta-nuevas').style.display = 'block';
+                setTimeout(() => document.getElementById('alerta-nuevas').style.display = 'none', 10000);
+            }
+
+            cacheLinks = new Set(news.map(n => n.link));
+            document.getElementById('contador').innerText = `${news.length} TOTAL`;
+            render(news);
+            ejecutarIA(news);
+        } catch (e) { console.error("Error"); }
+    }
+
+    async function ejecutarIA(news) {
+        const resumenDiv = document.getElementById('ai-resumen');
+        const titulos = news.slice(0, 30).map(n => n.titulo).join(" | ");
+
+        try {
+            // Llamamos a nuestra función de Vercel, no a Groq directamente
+            const resp = await fetch("/api/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ titulos })
+            });
+            const result = await resp.json();
+            resumenDiv.classList.remove('animate-pulse');
+            resumenDiv.innerText = result.resumen || "Análisis listo.";
+        } catch (err) { resumenDiv.innerText = "Error en NoticiasAPI"; }
+    }
+
+    function render(news) {
+        const pizarra = document.getElementById('pizarra');
+        pizarra.innerHTML = '';
+        const grouped = news.reduce((acc, n) => {
+            acc[n.fuente] = acc[n.fuente] || [];
+            acc[n.fuente].push(n);
+            return acc;
+        }, {});
+
+        for (const f in grouped) {
+            const card = document.createElement('section');
+            card.className = 'diario-card';
+            const rows = grouped[f].map(n => `<div class="noticia-row"><a href="${n.link}" target="_blank" class="title">${n.titulo}</a></div>`).join('');
+            card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
+            pizarra.appendChild(card);
+        }
+        lucide.createIcons();
+    }
+
+    monitorear();
+    setInterval(monitorear, 60000);
+</script>
+</body>
+</html>
