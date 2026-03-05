@@ -3,60 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - IA Control</title>
+    <title>CENTINELA - Veredicto IA</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --blue: #2563eb; --orange: #f59e0b; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; }
-        
-        /* Reset y estructura base */
         * { box-sizing: border-box; }
-        body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* CONTENEDOR FIJO ARRIBA (IA y Header) */
+        /* Bloque Fijo Superior */
         .fixed-top {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 1000;
-            padding: 10px;
-            border-bottom: 2px solid var(--blue);
+            position: sticky; top: 0; background: white; z-index: 1000;
+            padding: 10px; border-bottom: 2px solid var(--blue);
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-
-        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; margin-bottom: 10px; }
-        #ai-resumen { font-size: 0.95rem; line-height: 1.5; color: #334155; font-weight: 500; min-height: 40px; border-left: 3px solid var(--blue); padding-left: 12px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; }
+        #ai-resumen { font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; min-height: 45px; border-left: 3px solid var(--blue); padding-left: 12px; }
         
-        .acciones-ia { display: flex; gap: 8px; margin-top: 10px; }
+        .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
         .btn-ia { 
-            border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; 
+            border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; 
             font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 6px; transition: 0.2s;
         }
         .btn-analizar { background: var(--blue); color: white; }
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 5px 5px 0 5px; }
-
-        /* CONTENEDOR DE NOTICIAS CON SCROLL PROPIO */
-        .scroll-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 10px;
-            background: #ffffff;
-        }
-
-        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1200px; margin: auto; }
-        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; }
+        /* Contenedor de Noticias con Scroll */
+        .scroll-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1300px; margin: auto; }
+        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
         .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
         .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
-        .title:hover { color: var(--blue); }
-
-        /* Estilo para móvil */
-        @media (max-width: 600px) {
-            #ai-resumen { font-size: 0.85rem; }
-            .btn-ia { padding: 6px 10px; font-size: 0.65rem; }
-        }
     </style>
 </head>
 <body>
@@ -67,11 +46,11 @@
                 <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="18">
                 <span style="font-weight:900; color:var(--blue); font-size:0.75rem;">CENTINELA IA</span>
             </div>
-            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">CONECTANDO...</span>
+            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">SINCRONIZANDO...</span>
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Iniciando análisis estratégico...</div>
+            <div id="ai-resumen">Preparando veredicto de medios...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
                     <i data-lucide="brain-circuit" size="14"></i> ANALIZAR
@@ -99,11 +78,11 @@
             const news = data.noticias || [];
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} NOTICIAS ACTIVAS`;
+                document.getElementById('contador').innerText = `${news.length} NOTICIAS ANALIZADAS`;
                 render(news);
                 if (!isTyping) pedirAnalisis('extenso');
             }
-        } catch (e) {}
+        } catch (e) { console.error("Error de carga"); }
     }
 
     async function pedirAnalisis(modo) {
@@ -111,10 +90,11 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Sintetizando información..." : "Procesando tendencias...";
+        resDiv.innerText = modo === 'resumir' ? "Generando síntesis flash..." : "Comparando todos los titulares...";
 
         try {
-            const titulos = ultimaData.slice(0, 50).map(n => n.titulo).join(" | ");
+            // Enviamos hasta 100 titulares para un análisis real y total
+            const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -123,7 +103,7 @@
             const result = await resp.json();
             typeWriter(result.resumen, "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error de conexión con NoticiasAPI";
+            resDiv.innerText = "Error de conexión con la IA";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -165,7 +145,7 @@
     }
 
     monitorear();
-    setInterval(monitorear, 30000);
+    setInterval(monitorear, 30000); // Revisa noticias cada 30 segundos
 </script>
 </body>
 </html>
