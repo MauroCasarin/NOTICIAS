@@ -3,75 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centinela Financiero - Solo Noticias</title>
+    <title>Centinela Financiero - Dashboard</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root { --blue: #2563eb; --gray-bg: #f8fafc; }
         body { font-family: -apple-system, sans-serif; background: var(--gray-bg); margin: 0; padding: 15px; color: #1e293b; }
         .container { max-width: 600px; margin: auto; }
 
-        /* Encabezado similar al NewsFeed.tsx */
         .feed-header { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; 
+            display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .feed-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.5px; }
+        .feed-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; text-transform: uppercase; }
 
-        /* Estilo de Tarjetas de Noticias */
+        /* Tarjetas estilo NewsFeed.tsx */
         .card { 
-            background: white; 
-            border-radius: 16px; 
-            padding: 16px; 
-            margin-bottom: 16px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
-            border: 1px solid #e2e8f0;
+            background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid #e2e8f0;
             transition: transform 0.2s;
         }
         .card:active { transform: scale(0.98); }
         
         .source-tag { 
-            font-size: 0.65rem; 
-            font-weight: 700; 
-            padding: 4px 10px; 
-            border-radius: 20px; 
-            text-transform: uppercase; 
-            margin-bottom: 10px; 
-            display: inline-block; 
+            font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; 
+            text-transform: uppercase; margin-bottom: 8px; display: inline-block;
+            background: #f1f5f9; color: #475569;
         }
-        
-        /* Colores de fuentes (estilo NewsFeed.tsx) */
-        .infobae { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
-        .ambito { background: #f0f9ff; color: #0369a1; border: 1px solid #e0f2fe; }
-        .cronista { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
 
         .title { 
-            font-size: 1.05rem; 
-            font-weight: 700; 
-            line-height: 1.4; 
-            color: #0f172a; 
-            text-decoration: none; 
-            display: block; 
-            margin-bottom: 8px; 
-        }
-        .title:hover { color: var(--blue); }
-
-        .description { 
-            font-size: 0.9rem; 
-            color: #475569; 
-            line-height: 1.5; 
-            display: -webkit-box; 
-            -webkit-line-clamp: 3; 
-            -webkit-box-orient: vertical; 
-            overflow: hidden; 
+            font-size: 1rem; font-weight: 700; line-height: 1.4; color: #0f172a; 
+            text-decoration: none; display: block; 
         }
 
-        /* Cargando */
         #loader { text-align: center; padding: 50px; color: var(--blue); }
         .spinner { animation: spin 1s linear infinite; margin-bottom: 10px; display: inline-block; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -81,69 +44,53 @@
 
 <div class="container">
     <div class="feed-header">
-        <i data-lucide="newspaper" class="text-blue-600"></i>
-        <span class="feed-title">Noticias Económicas</span>
+        <i data-lucide="newspaper"></i>
+        <span class="feed-title">Central de Noticias</span>
     </div>
 
     <div id="loader">
         <div class="spinner"><i data-lucide="refresh-cw"></i></div>
-        <p>Sincronizando últimas noticias...</p>
+        <p>Conectando con Google Script...</p>
     </div>
 
     <div id="pizarra"></div>
 </div>
 
 <script>
-    // Configuración de los medios autorizados
-    const MEDIOS = [
-        { nombre: 'Infobae', url: 'https://www.infobae.com/feeds/rss/economia', clase: 'infobae' },
-        { nombre: 'Ámbito', url: 'https://www.ambito.com/rss/mercados.xml', clase: 'ambito' },
-        { nombre: 'Cronista', url: 'https://www.cronista.com/files/rss/finanzas.xml', clase: 'cronista' }
-    ];
+    // PEGA AQUÍ LA URL QUE TE DIO GOOGLE APPS SCRIPT
+    const WEB_APP_URL = "TU_URL_DE_GOOGLE_APPS_SCRIPT";
 
     async function cargarNoticias() {
         const pizarra = document.getElementById('pizarra');
         const loader = document.getElementById('loader');
-        
-        // Proxy para evitar errores de CORS en Vercel
-        const proxyUrl = "https://api.allorigins.win/get?url=";
 
-        for (const medio of MEDIOS) {
-            try {
-                const response = await fetch(`${proxyUrl}${encodeURIComponent(medio.url)}`);
-                const data = await response.json();
-                
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-                const items = xmlDoc.querySelectorAll("item");
+        try {
+            const response = await fetch(WEB_APP_URL);
+            const data = await response.json();
 
-                // Cargamos las 4 noticias más recientes de cada medio
-                Array.from(items).slice(0, 4).forEach(item => {
-                    const titulo = item.querySelector("title")?.textContent || "Sin título";
-                    const link = item.querySelector("link")?.textContent || "#";
-                    let desc = item.querySelector("description")?.textContent || "Resumen no disponible.";
-                    
-                    // Limpieza de HTML y corte de texto para el resumen
-                    desc = desc.replace(/<[^>]*>/g, '').substring(0, 160);
-
+            // Tu script devuelve data.noticias
+            if (data.noticias && data.noticias.length > 0) {
+                data.noticias.forEach(noticia => {
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <span class="source-tag ${medio.clase}">${medio.nombre}</span>
-                        <a href="${link}" target="_blank" class="title">${titulo}</a>
-                        <div class="description">${desc}...</div>
+                        <span class="source-tag">${noticia.fuente}</span>
+                        <a href="${noticia.link}" target="_blank" class="title">${noticia.titulo}</a>
                     `;
                     pizarra.appendChild(card);
                 });
-            } catch (e) {
-                console.warn("Error cargando fuente: " + medio.nombre);
+            } else {
+                pizarra.innerHTML = "<p>No se encontraron noticias en este momento.</p>";
             }
+        } catch (e) {
+            console.error(e);
+            pizarra.innerHTML = "<p>Error al conectar con el servidor de Google.</p>";
+        } finally {
+            loader.style.display = 'none';
+            lucide.createIcons();
         }
-        loader.style.display = 'none';
-        lucide.createIcons(); // Renderiza los iconos de Lucide
     }
 
-    // Inicia la carga automática al abrir la web
     window.addEventListener('load', cargarNoticias);
 </script>
 
