@@ -16,7 +16,11 @@ export default async function handler(req, res) {
         model: "llama-3.3-70b-versatile",
         messages: [{
           role: "user",
-          content: `Analiza estos titulares y realiza un resumen extenso (aproximadamente 3 o 4 oraciones). Primero identifica cuál es el tema más repetido en todos los medios y luego explica brevemente por qué es noticia hoy: ${titulos}`
+          content: `Analiza estos titulares: ${titulos}. 
+          1. Identifica el tema principal y cuántas veces aproximadamente se repite en los medios.
+          2. Haz un resumen extendido de 3 a 4 oraciones sobre de qué se está hablando más.
+          3. Busca y destaca si hay información sobre cotizaciones (Dólar, MEP, Blue, BCRA, Inflación). 
+          Responde con un tono informativo y estructurado.`
         }]
       })
     });
