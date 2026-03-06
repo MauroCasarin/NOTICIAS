@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - IA Elástica</title>
+    <title>CENTINELA - Veredicto Total</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        :root { --blue: #2563eb; --orange: #f59e0b; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; }
+        :root { --blue: #2563eb; --bull: #002d72; --orange: #f59e0b; --text: #0f172a; --border: #e2e8f0; --ai-bg: #f8fafc; }
         * { box-sizing: border-box; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
+        /* Panel Superior Fijo */
         .fixed-top {
             position: sticky; top: 0; background: white; z-index: 1000;
             padding: 10px; border-bottom: 2px solid var(--blue);
@@ -18,28 +19,12 @@
         }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
         
-        /* CONTENEDOR QUE SE AGRANDA AUTOMÁTICAMENTE */
-        .ai-panel { 
-            background: var(--ai-bg); 
-            border: 1px solid var(--blue); 
-            border-radius: 12px; 
-            padding: 15px; 
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* Contenedor IA Elástico con Scroll */
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; transition: all 0.3s ease; }
         #ai-resumen { 
-            font-size: 0.92rem; 
-            line-height: 1.5; 
-            color: #334155; 
-            font-weight: 500; 
-            height: auto; /* Permite que crezca */
-            max-height: 50vh; /* Se agranda hasta la mitad de la pantalla como máximo */
-            overflow-y: auto; /* Si supera el max-height, activa el scroll */
-            border-left: 3px solid var(--blue); 
-            padding-left: 12px; 
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 600; 
+            height: auto; max-height: 45vh; overflow-y: auto; 
+            border-left: 4px solid var(--blue); padding-left: 12px; white-space: pre-wrap;
         }
         
         .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
@@ -51,11 +36,17 @@
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
+        /* Grilla de Noticias */
         .scroll-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
-        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
+        
+        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; transition: 0.2s; }
         .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
         .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
+        
+        /* Estilo Especial para Bull Market */
+        .diario-card[data-fuente="BULL MARKET"] { border: 2px solid var(--bull); background: #f0f4f8; }
+        .diario-card[data-fuente="BULL MARKET"] .diario-header { color: var(--bull); font-weight: 900; }
     </style>
 </head>
 <body>
@@ -64,16 +55,16 @@
         <header class="header">
             <div style="display:flex; align-items:center; gap:8px">
                 <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
-                <span style="font-weight:900; color:var(--blue); font-size:0.8rem;">CENTINELA IA</span>
+                <span style="font-weight:900; color:var(--blue); font-size:0.85rem; letter-spacing:0.5px;">CENTINELA IA</span>
             </div>
-            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">ESCANEANDO...</span>
+            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">SINCRONIZANDO...</span>
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Detectando noticias repetidas...</div>
+            <div id="ai-resumen">Detectando tendencias en vivo y noticias repetidas...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
-                    <i data-lucide="brain-circuit" size="16"></i> BUSCAR TENDENCIA
+                    <i data-lucide="brain-circuit" size="16"></i> VEREDICTO TOTAL
                 </button>
                 <button id="btn-corto" class="btn-ia btn-resumir" onclick="pedirAnalisis('resumir')" disabled>
                     <i data-lucide="zap" size="16"></i> RESUMIR
@@ -87,7 +78,7 @@
     </main>
 
 <script>
-    const NEWS_API = "https://script.google.com/macros/s/AKfycbyRzAtQjhLexPaatkpxGCgq6dfLzp7R6-xO0zvComD3gg1CJbODXaZdqUe5GX9zi0lP4A/exec";
+    const NEWS_API = "https://script.google.com/macros/s/AKfycbwvsGMssz3gtrE7YtrhjZaTeEk_MiR58CtDfCEr0Fa24FBUTpUg3iVIlDdmBsHZmgCz5A/exec";
     let ultimaData = [];
     let isTyping = false;
 
@@ -102,7 +93,7 @@
                 render(news);
                 if (!isTyping) pedirAnalisis('extenso');
             }
-        } catch (e) { console.error("Error"); }
+        } catch (e) { console.error("Error de conexión"); }
     }
 
     async function pedirAnalisis(modo) {
@@ -110,19 +101,19 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Buscando patrón principal..." : "Analizando repeticiones...";
+        resDiv.innerText = modo === 'resumir' ? "Buscando patrón principal..." : "Analizando noticias repetidas y datos financieros...";
 
         try {
-            const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
+            const titulos = ultimaData.slice(0, 120).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
-            typeWriter(result.resumen || "Sin tendencia clara.", "ai-resumen");
+            typeWriter(result.resumen || "No se detectó una tendencia clara.", "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error de conexión.";
+            resDiv.innerText = "Error en el análisis de tendencia.";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -132,12 +123,10 @@
         let i = 0;
         const el = document.getElementById(elementId);
         el.innerHTML = "";
-        
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
-                // Forzar scroll al fondo mientras crece o escribe
-                el.scrollTop = el.scrollHeight;
+                el.scrollTop = el.scrollHeight; // Auto-scroll mientras escribe
                 i++;
                 setTimeout(type, 15);
             } else {
@@ -159,6 +148,7 @@
         for (const f in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
+            card.setAttribute('data-fuente', f); // Para el estilo de Bull Market
             const rows = grouped[f].map(n => `<a href="${n.link}" target="_blank" class="title">${n.titulo}</a>`).join('');
             card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
             pizarra.appendChild(card);
