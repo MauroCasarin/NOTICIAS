@@ -3,10 +3,15 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
 
   const { titulos, modo } = req.body;
-  const apiKey = process.env.NoticiasAPI; 
+  
+  // Cargamos ambas llaves desde Vercel
+  const apiKeys = [
+    process.env.NoticiasAPI,
+    process.env.NoticiasAPI2
+  ].filter(key => key); // Solo dejamos las que tengan contenido
 
-  if (!apiKey) {
-    return res.status(500).json({ error: 'Falta la Variable de Entorno: NoticiasAPI' });
+  if (apiKeys.length === 0) {
+    return res.status(500).json({ error: 'Faltan las Variables de Entorno en Vercel' });
   }
 
   const prompt = modo === 'resumir' 
@@ -18,26 +23,34 @@ export default async function handler(req, res) {
        4. FINANZAS: Si BULL MARKET o los diarios económicos mencionan cotizaciones (Dólar, MEP, Bonos), dalas al final como dato de cierre.
        Titulares: ${titulos}`;
 
-  try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [
-          { role: "system", content: "Eres un analista de medios experto. Tu misión es encontrar noticias repetidas y dar un veredicto unificado." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.1
-      })
-    });
+  // Intentamos con cada llave disponible hasta que una funcione
+  for (const key of apiKeys) {
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: "Eres un analista de medios experto. Tu misión es encontrar noticias repetidas y dar un veredicto unificado." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.1
+        })
+      });
 
-    const data = await response.json();
-    res.status(200).json({ resumen: data.choices[0].message.content });
-  } catch (error) {
-    res.status(500).json({ error: 'Error de análisis en la nube' });
+      if (response.ok) {
+        const data = await response.json();
+        return res.status(200).json({ resumen: data.choices[0].message.content });
+      }
+    } catch (error) {
+      console.error("Error con una de las llaves, probando la siguiente...");
+    }
   }
+
+  // Si llegamos aquí es porque todas las llaves fallaron
+  res.status(500).json({ error: 'Todas las API Keys fallaron o alcanzaron su límite' });
 }
