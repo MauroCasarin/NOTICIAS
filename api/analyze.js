@@ -10,12 +10,12 @@ export default async function handler(req, res) {
   }
 
   const prompt = modo === 'resumir' 
-    ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite en los medios: ${titulos}`
-    : `ANÁLISIS DE TENDENCIAS Y REPETICIONES:
-       1. TEMA DOMINANTE: ¿De qué se habla en este momento? Identifica patrones o nombres propios que se repitan en varios diarios.
-       2. VEREDICTO: Redacta un resumen de 4 o más oraciones sobre la tendencia más caliente.
-       3. OTROS TEMAS: Menciona una segunda tendencia relevante.
-       4. ECONOMÍA: Solo si hay datos de cotizaciones (dólar, inflación) explícitos y claros, menciónalos al final.
+    ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite entre los medios ahora: ${titulos}`
+    : `ANÁLISIS DE REPETICIONES Y TENDENCIAS:
+       1. PATRÓN PRINCIPAL: Identifica qué noticia o nombre se repite en la mayoría de los diarios.
+       2. VEREDICTO: Redacta un resumen de al menos 4 oraciones sobre esa tendencia dominante.
+       3. NOTICIAS SECUNDARIAS: Menciona otros temas con múltiples menciones.
+       4. ECONOMÍA: Datos de dólar o inflación solo si son explícitos en los textos.
        Titulares: ${titulos}`;
 
   try {
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "Eres un analista de tendencias. Tu prioridad es encontrar qué noticias se repiten en diferentes portales." },
+          { role: "system", content: "Eres un analista de tendencias. Tu prioridad es encontrar patrones de repetición en diferentes portales de noticias." },
           { role: "user", content: prompt }
         ],
         temperature: 0.1

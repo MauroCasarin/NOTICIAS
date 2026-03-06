@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - Tendencias en Vivo</title>
+    <title>CENTINELA - IA Dinámica</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,7 +11,6 @@
         * { box-sizing: border-box; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Panel Fijo Superior */
         .fixed-top {
             position: sticky; top: 0; background: white; z-index: 1000;
             padding: 10px; border-bottom: 2px solid var(--blue);
@@ -19,13 +18,15 @@
         }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
         
-        /* CONTENEDOR IA CON SCROLL INTERNO */
-        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; }
+        /* CONTENEDOR ELÁSTICO CON SCROLL */
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; transition: all 0.3s ease; }
         #ai-resumen { 
             font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; 
-            max-height: 150px; /* Altura máxima para celulares */
-            overflow-y: auto;  /* Habilita el scroll si el texto es largo */
-            border-left: 3px solid var(--blue); padding-left: 12px; white-space: pre-wrap; 
+            min-height: 40px; 
+            max-height: 220px; /* Se agranda hasta este límite en celulares/PC */
+            overflow-y: auto; 
+            border-left: 3px solid var(--blue); padding-left: 12px; white-space: pre-wrap;
+            transition: height 0.2s ease;
         }
         
         .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
@@ -37,7 +38,6 @@
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Noticias con Scroll */
         .scroll-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
         .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
@@ -57,7 +57,7 @@
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Detectando temas repetidos en los portales...</div>
+            <div id="ai-resumen">Analizando patrones de repetición en los medios...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
                     <i data-lucide="brain-circuit" size="16"></i> BUSCAR TENDENCIA
@@ -119,10 +119,11 @@
         let i = 0;
         const el = document.getElementById(elementId);
         el.innerHTML = "";
+        
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
-                // Autoscroll hacia abajo mientras escribe
+                // Forzar scroll al fondo mientras crece o escribe
                 el.scrollTop = el.scrollHeight;
                 i++;
                 setTimeout(type, 15);
