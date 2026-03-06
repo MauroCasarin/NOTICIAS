@@ -9,14 +9,13 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Falta la Variable de Entorno: NoticiasAPI' });
   }
 
-  // Configuración de la IA para detectar repeticiones y tendencias reales
   const prompt = modo === 'resumir' 
     ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite entre los medios ahora: ${titulos}`
     : `ANÁLISIS DE TENDENCIAS (VEREDICTO TOTAL):
-       1. TEMA DOMINANTE: ¿De qué hablan la mayoría de los diarios? Identifica la noticia con más repeticiones.
+       1. TEMA DOMINANTE: Identifica la noticia con más repeticiones entre los diarios.
        2. ANÁLISIS: Redacta un veredicto de 4 o 5 oraciones sobre por qué ese tema es tendencia.
        3. SEGUNDA TENDENCIA: Menciona otro tema que aparezca en al menos 3 fuentes distintas.
-       4. FINANZAS: Si Bull Market o los diarios económicos mencionan cotizaciones claras (Dólar, MEP, Bonos), dalas al final como dato de cierre.
+       4. FINANZAS: Si BULL MARKET o los diarios económicos mencionan cotizaciones (Dólar, MEP, Bonos), dalas al final como dato de cierre.
        Titulares: ${titulos}`;
 
   try {
@@ -29,10 +28,10 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [
-          { role: "system", content: "Eres un analista de medios experto. Tu misión es encontrar qué noticias se repiten en diferentes portales y dar un veredicto unificado." },
+          { role: "system", content: "Eres un analista de medios experto. Tu misión es encontrar noticias repetidas y dar un veredicto unificado." },
           { role: "user", content: prompt }
         ],
-        temperature: 0.1 // Máxima precisión
+        temperature: 0.1
       })
     });
 
