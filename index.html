@@ -18,8 +18,15 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
+        
+        /* CONTENEDOR IA CON SCROLL INTERNO */
         .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; }
-        #ai-resumen { font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; min-height: 45px; border-left: 3px solid var(--blue); padding-left: 12px; white-space: pre-wrap; }
+        #ai-resumen { 
+            font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; 
+            max-height: 150px; /* Altura máxima para celulares */
+            overflow-y: auto;  /* Habilita el scroll si el texto es largo */
+            border-left: 3px solid var(--blue); padding-left: 12px; white-space: pre-wrap; 
+        }
         
         .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
         .btn-ia { 
@@ -36,7 +43,6 @@
         .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
         .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
         .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
-        .title:hover { color: var(--blue); }
     </style>
 </head>
 <body>
@@ -45,13 +51,13 @@
         <header class="header">
             <div style="display:flex; align-items:center; gap:8px">
                 <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
-                <span style="font-weight:900; color:var(--blue); font-size:0.8rem; letter-spacing: 0.5px;">CENTINELA IA</span>
+                <span style="font-weight:900; color:var(--blue); font-size:0.8rem;">CENTINELA IA</span>
             </div>
             <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">ESCANEANDO...</span>
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Detectando noticias más repetidas y tendencias clave...</div>
+            <div id="ai-resumen">Detectando temas repetidos en los portales...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
                     <i data-lucide="brain-circuit" size="16"></i> BUSCAR TENDENCIA
@@ -91,10 +97,9 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Buscando patrón principal..." : "Analizando qué noticias se repiten más...";
+        resDiv.innerText = modo === 'resumir' ? "Buscando patrón principal..." : "Analizando repeticiones...";
 
         try {
-            // Enviamos 100 titulares para un análisis real
             const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
@@ -102,9 +107,9 @@
                 body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
-            typeWriter(result.resumen || "Sin tendencia clara todavía.", "ai-resumen");
+            typeWriter(result.resumen || "Sin tendencia clara.", "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error de conexión con la IA de análisis.";
+            resDiv.innerText = "Error de conexión con la IA.";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -117,6 +122,8 @@
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
+                // Autoscroll hacia abajo mientras escribe
+                el.scrollTop = el.scrollHeight;
                 i++;
                 setTimeout(type, 15);
             } else {
@@ -146,7 +153,7 @@
     }
 
     monitorear();
-    setInterval(monitorear, 45000); // Monitoreo cada 45 seg
+    setInterval(monitorear, 45000);
 </script>
 </body>
 </html>
