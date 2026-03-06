@@ -11,7 +11,6 @@
         * { box-sizing: border-box; }
         body { font-family: -apple-system, sans-serif; background: #ffffff; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Panel Superior Fijo */
         .fixed-top {
             position: sticky; top: 0; background: white; z-index: 1000;
             padding: 10px; border-bottom: 2px solid var(--blue);
@@ -20,7 +19,7 @@
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
         
         /* Contenedor IA Elástico con Scroll */
-        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; transition: all 0.3s ease; }
+        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
         #ai-resumen { 
             font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 600; 
             height: auto; max-height: 45vh; overflow-y: auto; 
@@ -30,23 +29,22 @@
         .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
         .btn-ia { 
             border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; 
-            font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 8px; transition: 0.2s;
+            font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 8px;
         }
         .btn-analizar { background: var(--blue); color: white; }
         .btn-resumir { background: var(--orange); color: white; }
         .btn-ia:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Grilla de Noticias */
         .scroll-content { flex: 1; overflow-y: auto; padding: 15px; background: #ffffff; }
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
         
-        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; transition: 0.2s; }
+        .diario-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: white; height: fit-content; }
         .diario-header { font-size: 0.85rem; font-weight: 800; color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
         .title { font-size: 0.82rem; font-weight: 600; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f8fafc; }
         
-        /* Estilo Especial para Bull Market */
+        /* Estilo Especial Bull Market */
         .diario-card[data-fuente="BULL MARKET"] { border: 2px solid var(--bull); background: #f0f4f8; }
-        .diario-card[data-fuente="BULL MARKET"] .diario-header { color: var(--bull); font-weight: 900; }
+        .diario-card[data-fuente="BULL MARKET"] .diario-header { color: var(--bull); }
     </style>
 </head>
 <body>
@@ -55,13 +53,13 @@
         <header class="header">
             <div style="display:flex; align-items:center; gap:8px">
                 <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="20">
-                <span style="font-weight:900; color:var(--blue); font-size:0.85rem; letter-spacing:0.5px;">CENTINELA IA</span>
+                <span style="font-weight:900; color:var(--blue); font-size:0.85rem;">CENTINELA IA</span>
             </div>
-            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">SINCRONIZANDO...</span>
+            <span id="contador" style="font-size:0.65rem; font-weight:bold; color:#64748b;">CARGANDO...</span>
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Detectando tendencias en vivo y noticias repetidas...</div>
+            <div id="ai-resumen">Analizando patrones y noticias repetidas...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
                     <i data-lucide="brain-circuit" size="16"></i> VEREDICTO TOTAL
@@ -78,7 +76,8 @@
     </main>
 
 <script>
-    const NEWS_API = "https://script.google.com/macros/s/AKfycbwvsGMssz3gtrE7YtrhjZaTeEk_MiR58CtDfCEr0Fa24FBUTpUg3iVIlDdmBsHZmgCz5A/exec";
+    // URL ACTUALIZADA SEGÚN TU SOLICITUD
+    const NEWS_API = "https://script.google.com/macros/s/AKfycbxqQuRw6Z2mteYElS0Y7t9HlWyeBK664h2vrTrFnP2SA5MgITc-dl-Ho8jXMIfDVDHRaw/exec";
     let ultimaData = [];
     let isTyping = false;
 
@@ -89,11 +88,11 @@
             const news = data.noticias || [];
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} TITULARES CARGADOS`;
+                document.getElementById('contador').innerText = `${news.length} TITULARES ACTIVOS`;
                 render(news);
                 if (!isTyping) pedirAnalisis('extenso');
             }
-        } catch (e) { console.error("Error de conexión"); }
+        } catch (e) { console.error("Error API"); }
     }
 
     async function pedirAnalisis(modo) {
@@ -101,19 +100,19 @@
         isTyping = true;
         document.querySelectorAll('.btn-ia').forEach(b => b.disabled = true);
         const resDiv = document.getElementById('ai-resumen');
-        resDiv.innerText = modo === 'resumir' ? "Buscando patrón principal..." : "Analizando noticias repetidas y datos financieros...";
+        resDiv.innerText = "Analizando tendencias dominantes...";
 
         try {
-            const titulos = ultimaData.slice(0, 120).map(n => n.titulo).join(" | ");
+            const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ titulos, modo })
             });
             const result = await resp.json();
-            typeWriter(result.resumen || "No se detectó una tendencia clara.", "ai-resumen");
+            typeWriter(result.resumen || "Sin veredicto claro.", "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error en el análisis de tendencia.";
+            resDiv.innerText = "Error de conexión con NoticiasAPI. Revisa las variables de entorno en Vercel.";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
@@ -126,7 +125,7 @@
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
-                el.scrollTop = el.scrollHeight; // Auto-scroll mientras escribe
+                el.scrollTop = el.scrollHeight;
                 i++;
                 setTimeout(type, 15);
             } else {
@@ -145,13 +144,24 @@
             acc[n.fuente].push(n);
             return acc;
         }, {});
+
         for (const f in grouped) {
-            const card = document.createElement('section');
-            card.className = 'diario-card';
-            card.setAttribute('data-fuente', f); // Para el estilo de Bull Market
-            const rows = grouped[f].map(n => `<a href="${n.link}" target="_blank" class="title">${n.titulo}</a>`).join('');
-            card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
-            pizarra.appendChild(card);
+            // FILTRO DE SEGURIDAD PARA BULL MARKET EN EL FRONTEND
+            const noticiasFiltradas = grouped[f].filter(n => {
+                if (f === "BULL MARKET") {
+                    return !n.titulo.includes("Protegé") && !n.titulo.includes("verificando") && n.titulo.length > 20;
+                }
+                return true;
+            });
+
+            if (noticiasFiltradas.length > 0) {
+                const card = document.createElement('section');
+                card.className = 'diario-card';
+                card.setAttribute('data-fuente', f);
+                const rows = noticiasFiltradas.map(n => `<a href="${n.link}" target="_blank" class="title">${n.titulo}</a>`).join('');
+                card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
+                pizarra.appendChild(card);
+            }
         }
         lucide.createIcons();
     }
