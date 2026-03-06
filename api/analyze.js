@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite entre los medios ahora: ${titulos}`
     : `ANÁLISIS DE REPETICIONES Y TENDENCIAS:
        1. PATRÓN PRINCIPAL: Identifica qué noticia o nombre se repite en la mayoría de los diarios.
-       2. VEREDICTO: Redacta un resumen de al menos 4 oraciones sobre esa tendencia dominante.
+       2. VEREDICTO: Redacta un resumen detallado sobre esa tendencia dominante.
        3. NOTICIAS SECUNDARIAS: Menciona otros temas con múltiples menciones.
        4. ECONOMÍA: Datos de dólar o inflación solo si son explícitos en los textos.
        Titulares: ${titulos}`;

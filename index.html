@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CENTINELA - IA Dinámica</title>
+    <title>CENTINELA - IA Elástica</title>
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -18,15 +18,28 @@
         }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 5px; }
         
-        /* CONTENEDOR ELÁSTICO CON SCROLL */
-        .ai-panel { background: var(--ai-bg); border: 1px solid var(--blue); border-radius: 12px; padding: 15px; transition: all 0.3s ease; }
+        /* CONTENEDOR QUE SE AGRANDA AUTOMÁTICAMENTE */
+        .ai-panel { 
+            background: var(--ai-bg); 
+            border: 1px solid var(--blue); 
+            border-radius: 12px; 
+            padding: 15px; 
+            display: flex;
+            flex-direction: column;
+        }
+
         #ai-resumen { 
-            font-size: 0.92rem; line-height: 1.5; color: #334155; font-weight: 500; 
-            min-height: 40px; 
-            max-height: 220px; /* Se agranda hasta este límite en celulares/PC */
-            overflow-y: auto; 
-            border-left: 3px solid var(--blue); padding-left: 12px; white-space: pre-wrap;
-            transition: height 0.2s ease;
+            font-size: 0.92rem; 
+            line-height: 1.5; 
+            color: #334155; 
+            font-weight: 500; 
+            height: auto; /* Permite que crezca */
+            max-height: 50vh; /* Se agranda hasta la mitad de la pantalla como máximo */
+            overflow-y: auto; /* Si supera el max-height, activa el scroll */
+            border-left: 3px solid var(--blue); 
+            padding-left: 12px; 
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
         
         .acciones-ia { display: flex; gap: 10px; margin-top: 12px; }
@@ -57,7 +70,7 @@
         </header>
 
         <section class="ai-panel">
-            <div id="ai-resumen">Analizando patrones de repetición en los medios...</div>
+            <div id="ai-resumen">Detectando noticias repetidas...</div>
             <div class="acciones-ia">
                 <button id="btn-extenso" class="btn-ia btn-analizar" onclick="pedirAnalisis('extenso')" disabled>
                     <i data-lucide="brain-circuit" size="16"></i> BUSCAR TENDENCIA
@@ -109,7 +122,7 @@
             const result = await resp.json();
             typeWriter(result.resumen || "Sin tendencia clara.", "ai-resumen");
         } catch (err) {
-            resDiv.innerText = "Error de conexión con la IA.";
+            resDiv.innerText = "Error de conexión.";
             isTyping = false;
             document.querySelectorAll('.btn-ia').forEach(b => b.disabled = false);
         }
