@@ -16,11 +16,11 @@ export default async function handler(req, res) {
 
   const prompt = modo === 'resumir' 
     ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite entre los medios ahora: ${titulos}`
-    : `ANÁLISIS DE TENDENCIAS (VEREDICTO TOTAL):
+    : `ANÁLISIS DE TENDENCIAS (VEREDICTO):
        1. TEMA DOMINANTE: Identifica la noticia con más repeticiones entre los diarios.
        2. ANÁLISIS: Redacta un veredicto de 4 o 5 oraciones sobre por qué ese tema es tendencia.
        3. SEGUNDA TENDENCIA: Menciona otro tema que aparezca en al menos 3 fuentes distintas.
-       4. FINANZAS: Si BULL MARKET o los diarios económicos mencionan cotizaciones (Dólar, MEP, Bonos), dalas al final como dato de cierre.
+       4. FINANZAS: Y hace un resumen si los diarios hablan sobre temas economicos.   pero nunca mencionar valores o inventar datos ni dar % vacios.
        Titulares: ${titulos}`;
 
   // Intentamos con cada llave disponible hasta que una funcione
