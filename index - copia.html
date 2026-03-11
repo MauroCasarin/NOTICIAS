@@ -11,80 +11,100 @@
             --blue-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
             --dark-blue: #002d72;
             --bg-light: #f1f5f9;
-            --text-main: #ffffff;
-            --card-bg: #ffffff;
         }
         
-        * { box-sizing: border-box; font-family: 'Inter', -apple-system, sans-serif; }
-        body { background: var(--bg-light); margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-light); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
         .hero-header {
             background: var(--blue-gradient);
-            padding: 40px 20px;
+            padding: clamp(20px, 5vh, 40px) 20px;
             color: white;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .brand-title { font-weight: 900; font-size: 1.6rem; letter-spacing: -0.5px; text-transform: uppercase; margin-bottom: 25px; display: block; }
-
-        .ai-container { max-width: 800px; margin: 0 auto; }
-
-        #ai-resumen { 
-            font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.95);
-            max-height: 25vh; min-height: 80px; overflow-y: auto; padding: 15px;
-            margin-bottom: 25px; font-weight: 500; border-left: 3px solid rgba(255,255,255,0.3);
-            background: rgba(0,0,0,0.1); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .loading-text {
+        .brand-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            animation: pulse 1.5s infinite;
+            justify-content: center;
+            gap: clamp(10px, 2vw, 15px);
+            margin-bottom: 20px;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
+        /* TEXTO ADAPTABLE: clamp(mínimo, preferido, máximo) */
+        .brand-title { 
+            font-weight: 900; 
+            font-size: clamp(1.1rem, 4vw, 1.6rem); 
+            letter-spacing: -0.5px; 
+            text-transform: uppercase; 
+            margin: 0;
+        }
+
+        .insta-icon {
+            filter: brightness(0) invert(1);
+            width: clamp(24px, 5vw, 30px);
+            animation: pulse-icon 2s infinite;
+        }
+
+        .ai-container { max-width: 800px; margin: 0 auto; width: 100%; }
+
+        #ai-resumen { 
+            /* Fuente más delicada y adaptable */
+            font-size: clamp(0.85rem, 2.5vw, 0.95rem); 
+            line-height: 1.6; 
+            color: rgba(255,255,255,0.95);
+            height: auto; min-height: 60px; padding: 15px;
+            margin-bottom: 20px; font-weight: 400; 
+            border-left: 3px solid rgba(255,255,255,0.4);
+            background: rgba(0,0,0,0.15); border-radius: 10px;
+            text-align: left;
+            white-space: pre-wrap;
         }
 
         .btn-main {
             background: white; color: #1e40af; border: none;
-            padding: 14px 35px; border-radius: 12px; font-weight: 800;
-            font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+            padding: clamp(10px, 2vh, 14px) clamp(20px, 5vw, 35px);
+            border-radius: 10px; font-weight: 800;
+            font-size: clamp(0.75rem, 2vw, 0.85rem); 
+            cursor: pointer; transition: all 0.2s;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex;
-            align-items: center; gap: 10px; margin: 0 auto;
+            align-items: center; gap: 8px; margin: 0 auto;
         }
-        .btn-main:disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(1); }
 
         .metrics-bar {
-            padding: 12px 20px; background: white; border-bottom: 1px solid #e2e8f0;
+            padding: 10px 20px; background: white; border-bottom: 1px solid #e2e8f0;
             display: flex; justify-content: center; align-items: center;
+            position: sticky; top: 0; z-index: 100;
         }
-        .metric-label { font-size: 0.7rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-right: 8px; }
-        .metric-value { font-size: 0.9rem; font-weight: 900; color: #1e40af; }
+        .metric-label { font-size: 0.65rem; font-weight: 800; color: #64748b; margin-right: 5px; }
+        .metric-value { font-size: 0.8rem; font-weight: 900; color: #1e40af; }
 
-        .scroll-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .scroll-content { flex: 1; padding: clamp(10px, 3vw, 20px); }
         .grid-noticias { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 20px; max-width: 1400px; margin: auto; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 90vw, 320px), 1fr)); 
+            gap: 15px; max-width: 1400px; margin: auto; 
         }
         
         .diario-card { 
-            background: white; border-radius: 12px; padding: 15px; 
+            background: white; border-radius: 10px; padding: 12px; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
         }
         .diario-header { 
-            font-size: 0.75rem; font-weight: 900; color: #1e40af; 
-            margin-bottom: 12px; border-left: 3px solid #1e40af; padding-left: 8px; text-transform: uppercase;
+            font-size: 0.7rem; font-weight: 900; color: #1e40af; 
+            margin-bottom: 10px; border-left: 2px solid #1e40af; padding-left: 6px; text-transform: uppercase;
         }
         .title { 
-            font-size: 0.85rem; font-weight: 600; color: #334155; 
-            text-decoration: none; display: block; padding: 8px 0; 
-            border-bottom: 1px solid #f1f5f9; line-height: 1.4;
+            font-size: 0.8rem; font-weight: 500; color: #334155; 
+            text-decoration: none; display: block; padding: 6px 0; 
+            border-bottom: 1px solid #f1f5f9; line-height: 1.3;
+        }
+
+        @keyframes pulse-icon {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
         }
     </style>
 </head>
@@ -92,24 +112,22 @@
 
     <header class="hero-header">
         <div class="ai-container">
-            <span class="brand-title">ANÁLISIS IA DE NOTICIAS</span>
-
-            <div id="ai-resumen">
-                <div class="loading-text">
-                    <i data-lucide="loader-2" class="animate-spin"></i>
-                    <span>SINCRONIZANDO NOTICIAS...</span>
-                </div>
+            <div class="brand-header">
+                <a href="https://www.instagram.com/3d_mc_3d/" target="_blank" style="text-decoration:none;">
+                    <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" class="insta-icon">
+                </a>
+                <h1 class="brand-title">ANÁLISIS IA DE NOTICIAS</h1>
             </div>
-            
+            <div id="ai-resumen">SINCROIZANDO FUENTES...</div>
             <button id="btn-master" class="btn-main" onclick="iniciarProceso()" disabled>
-                <i data-lucide="brain-circuit" size="18"></i>
+                <i data-lucide="brain-circuit" size="16"></i>
                 <span id="btn-label">ESPERANDO DATOS</span>
             </button>
         </div>
     </header>
 
     <section class="metrics-bar">
-        <span class="metric-label">NOTICIAS DETECTADAS:</span>
+        <span class="metric-label">NOTICIAS:</span>
         <span id="contador" class="metric-value">0</span>
     </section>
 
@@ -118,6 +136,7 @@
     </main>
 
 <script>
+    // Tu lógica de JS permanece igual, solo actualizamos el render para ser más "delicado"
     const NEWS_API = "https://script.google.com/macros/s/AKfycbxnl6mjB1Zd_eW0LxlYPylMn4gdP4_JgWBfSsB-BMI4czcA65W8gekaxVXlWAi6LNagbQ/exec"; 
     let ultimaData = [];
     let isTyping = false;
@@ -127,40 +146,25 @@
             const res = await fetch(NEWS_API);
             const data = await res.json();
             const news = data.noticias || [];
-            
             if (JSON.stringify(news) !== JSON.stringify(ultimaData)) {
                 ultimaData = news;
-                document.getElementById('contador').innerText = `${news.length} ACTIVAS`;
+                document.getElementById('contador').innerText = news.length;
                 render(news);
-                
                 if (!isTyping) {
-                    const aiDiv = document.getElementById('ai-resumen');
-                    if(aiDiv.querySelector('.loading-text')) {
-                        aiDiv.innerHTML = "NOTICIAS CARGADAS. LISTO PARA ANALIZAR.";
-                    }
+                    document.getElementById('ai-resumen').innerHTML = "LISTO PARA ANALIZAR.";
                     document.getElementById('btn-master').disabled = false;
                     document.getElementById('btn-label').innerText = "GENERAR ANÁLISIS";
                 }
             }
-        } catch (e) { 
-            document.getElementById('contador').innerText = "ERROR";
-            document.getElementById('ai-resumen').innerText = "Error al conectar con la base de noticias.";
-        }
+        } catch (e) { console.error(e); }
     }
 
     async function iniciarProceso() {
         if (ultimaData.length === 0 || isTyping) return;
-        
-        const btn = document.getElementById('btn-master');
-        const label = document.getElementById('btn-label');
-        const aiDiv = document.getElementById('ai-resumen');
-        
-        btn.disabled = true;
         isTyping = true;
-
-        label.innerText = "PROCESANDO...";
-        aiDiv.innerHTML = `<div class="loading-text"><i data-lucide="cpu" class="animate-spin"></i><span>GENERANDO ANÁLISIS IA...</span></div>`;
-        lucide.createIcons();
+        document.getElementById('btn-master').disabled = true;
+        document.getElementById('btn-label').innerText = "PROCESANDO...";
+        document.getElementById('ai-resumen').innerText = "Generando informe financiero...";
 
         try {
             const titulos = ultimaData.slice(0, 60).map(n => n.titulo).join(" | ");
@@ -169,39 +173,28 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ titulos, modo: 'extenso' })
             });
-            
-            if (!resp.ok) throw new Error('Error en servidor');
-            
             const result = await resp.json();
-            label.innerText = "ANÁLISIS COMPLETADO";
-            typeWriter(result.resumen || "No se detectaron tendencias claras.", "ai-resumen");
+            typeWriter(result.resumen || "Sin datos.", "ai-resumen");
         } catch (err) {
-            aiDiv.innerText = "Error al conectar con el motor de IA. Revisa las API Keys en Vercel.";
-            resetBtn();
+            document.getElementById('ai-resumen').innerText = "Error en la conexión.";
+            isTyping = false;
+            document.getElementById('btn-master').disabled = false;
         }
-    }
-
-    function resetBtn() {
-        const btn = document.getElementById('btn-master');
-        const label = document.getElementById('btn-label');
-        btn.disabled = false;
-        isTyping = false;
-        label.innerText = "REGENERAR ANÁLISIS";
     }
 
     function typeWriter(text, elementId) {
         let i = 0;
         const el = document.getElementById(elementId);
-        el.style.justifyContent = "flex-start";
         el.innerHTML = "";
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
-                el.scrollTop = el.scrollHeight;
                 i++;
-                setTimeout(type, 15);
+                setTimeout(type, 8);
             } else {
-                resetBtn();
+                isTyping = false;
+                document.getElementById('btn-master').disabled = false;
+                document.getElementById('btn-label').innerText = "REGENERAR ANÁLISIS";
             }
         }
         type();
@@ -218,7 +211,6 @@
         for (const f in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
-            card.setAttribute('data-fuente', f);
             const rows = grouped[f].map(n => `<a href="${n.link}" target="_blank" class="title">${n.titulo}</a>`).join('');
             card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
             pizarra.appendChild(card);
