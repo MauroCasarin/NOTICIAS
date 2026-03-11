@@ -27,18 +27,54 @@
             flex-shrink: 0;
         }
 
-        .brand-title { font-weight: 900; font-size: 1.6rem; letter-spacing: -0.5px; text-transform: uppercase; margin-bottom: 25px; display: block; }
+        /* CONTENEDOR DE TÍTULO E ICONO */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .brand-title { 
+            font-weight: 900; 
+            font-size: 1.6rem; 
+            letter-spacing: -0.5px; 
+            text-transform: uppercase; 
+            margin: 0;
+        }
+
+        /* ESTILO E ICONO DE INSTAGRAM CON ANIMACIÓN */
+        .insta-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .insta-link:hover { transform: scale(1.1); }
+
+        .insta-icon {
+            filter: brightness(0) invert(1); /* Hace el favicon blanco */
+            animation: pulse-icon 2s infinite;
+        }
+
+        @keyframes pulse-icon {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
 
         .ai-container { max-width: 800px; margin: 0 auto; width: 100%; }
 
-        /* VENTANA ELÁSTICA: Crece con el contenido y justifica a la izquierda */
         #ai-resumen { 
             font-size: 0.95rem; line-height: 1.7; color: rgba(255,255,255,0.95);
             height: auto; min-height: 80px; padding: 20px;
             margin-bottom: 25px; font-weight: 500; border-left: 4px solid rgba(255,255,255,0.4);
             background: rgba(0,0,0,0.15); border-radius: 12px;
-            text-align: left; /* Justificado a la izquierda */
-            white-space: pre-wrap; /* Mantiene los saltos de línea para separar temas */
+            text-align: left;
+            white-space: pre-wrap;
             transition: height 0.3s ease;
         }
 
@@ -46,11 +82,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            animation: pulse 1.5s infinite;
-            justify-content: center; /* Solo el cargando queda centrado */
+            animation: pulse-text 1.5s infinite;
+            justify-content: center;
         }
 
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes pulse-text { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
         .btn-main {
             background: white; color: #1e40af; border: none;
@@ -94,7 +130,12 @@
 
     <header class="hero-header">
         <div class="ai-container">
-            <span class="brand-title">ANÁLISIS IA DE NOTICIAS</span>
+            <div class="brand-header">
+                <a href="https://www.instagram.com/3d_mc_3d/" target="_blank" class="insta-link" title="Visitar Instagram">
+                    <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" width="30" class="insta-icon">
+                </a>
+                <h1 class="brand-title">ANÁLISIS IA DE NOTICIAS</h1>
+            </div>
 
             <div id="ai-resumen">
                 <div class="loading-text">
@@ -195,14 +236,12 @@
     function typeWriter(text, elementId) {
         let i = 0;
         const el = document.getElementById(elementId);
-        el.style.justifyContent = "flex-start"; // Cambia a izquierda para el texto
+        el.style.justifyContent = "flex-start";
         el.innerHTML = "";
         
         function type() {
             if (i < text.length) {
                 el.innerHTML += text.charAt(i);
-                // Si el header está en un contenedor con scroll, podrías necesitar scrollIntoView, 
-                // pero como el body tiene scroll, la ventana se agrandará naturalmente.
                 i++;
                 setTimeout(type, 10);
             } else {
