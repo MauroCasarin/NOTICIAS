@@ -15,21 +15,20 @@ export default async function handler(req, res) {
 
   const prompt = modo === 'resumir' 
     ? `SINTESIS: Tema más repetido en una frase corta: ${titulos}`
-    : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
+    : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA de los titulares.
 
-       REGLAS ESTRICTAS:
-       1. SIN VALORES NUMÉRICOS: Está terminantemente prohibido dar precios, cotizaciones, tasas o porcentajes. 
-       2. TENDENCIAS: Puedes mencionar si un activo subió, bajó o está estable, pero nunca digas cuánto ni a qué precio.
-       3. CERO EXCUSAS: Prohibido decir "no hay datos" o "faltan cifras". Si no hay números, analiza el impacto o la tendencia cualitativa directamente.
-       4. NO REPETICIÓN: Cada uno de los 4 temas debe ser diferente (no repetir Dólar, ni la misma empresa o persona).
+       REGLAS ESTRICTAS DE CONTENIDO:
+       1. NO REPETICIÓN DE TEMAS: Si un activo (ej. Dólar), persona o empresa ya fue tratado en un tema anterior, está PROHIBIDO mencionarlo en los puntos siguientes. Cada uno de los 4 temas debe ser sobre un asunto totalmente independiente.
+       2. PROHIBIDO VALORES: No des precios, cotizaciones, porcentajes ni tasas. Puedes decir si algo subió o bajó, pero nunca el valor.
+       3. CERO EXCUSAS: Prohibido decir "no hay datos", "faltan cifras" o "según los titulares". Analiza la tendencia directamente.
        
-       FORMATO:
-       TEMA 1: [Análisis de tendencia en 2 oraciones]
-       TEMA 2: [Análisis de tendencia en 2 oraciones]
-       TEMA 3: [Análisis de tendencia en 2 oraciones]
-       TEMA 4: [Análisis de tendencia en 2 oraciones]
+       FORMATO DE SALIDA (SIN INTRODUCCIONES):
+       TEMA 1: [Análisis técnico en 2 oraciones]
+       TEMA 2: [Análisis técnico en 2 oraciones]
+       TEMA 3: [Análisis técnico en 2 oraciones]
+       TEMA 4: [Análisis técnico en 2 oraciones]
 
-       Lenguaje: Financiero argentino (MEP, CCL, Lecaps, Brecha).
+       Lenguaje: Mercado argentino (MEP, CCL, Lecaps, Brecha).
        Titulares: ${titulos}`;
 
   for (const key of apiKeys) {
@@ -45,7 +44,7 @@ export default async function handler(req, res) {
           messages: [
             { 
               role: "system", 
-              content: "Eres un analista mudo. Prohibido usar las palabras 'datos', 'cifras', 'números' o 'específicos'. Puedes decir que algo sube o baja, pero tienes prohibido dar el valor o el porcentaje." 
+              content: "Eres un analista mudo. Tu respuesta empieza directo en TEMA 1. Tienes prohibido usar las palabras 'datos', 'específicos', 'información' o 'cifras'. No incluyes números ni símbolos de porcentaje." 
             },
             { role: "user", content: prompt }
           ],
@@ -62,5 +61,5 @@ export default async function handler(req, res) {
     }
   }
 
-  res.status(500).json({ error: 'Error de conexión con IA' });
+  res.status(500).json({ error: 'Fallo total de conexión con IA' });
 }
