@@ -4,6 +4,7 @@ export default async function handler(req, res) {
 
   const { titulos, modo } = req.body;
   
+  // Selección de API Keys desde variables de entorno
   const apiKeys = [
     process.env.NoticiasAPI,
     process.env.NoticiasAPI2
@@ -13,14 +14,15 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Faltan las Variables de Entorno en Vercel' });
   }
 
+  // Configuración del prompt con reglas estrictas de no repetición y veracidad
   const prompt = modo === 'resumir' 
     ? `SINTESIS: Tema más repetido en una frase: ${titulos}`
     : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
 
        REGLAS DE ORO:
-       1. CERO EXPLICACIONES: Prohibido decir "no hay datos", "faltan cifras" o "según los titulares". Si no hay números, analiza la intención política o económica del tema sin mencionarlos.
-       2. JERARQUÍA Y NO REPETICIÓN: TEMA 1 es el más frecuente. Prohibido repetir activos o personas entre los 4 puntos.
-       3. CONCISIÓN: Máximo 2 oraciones por tema.
+       1. CERO EXCUSAS: Prohibido usar las palabras "datos", "específicos", "información", "cifras" o "titulares" para justificar falta de precisión. Si no hay números, analiza la tendencia política o económica directamente.
+       2. JERARQUÍA Y NO REPETICIÓN: El TEMA 1 es el más frecuente. Cada veredicto debe tratar un activo, empresa o persona diferente. Prohibido repetir temas entre los 4 puntos.
+       3. CONCISIÓN: Máximo 2 oraciones por tema. Sin introducciones ni saludos.
        
        FORMATO:
        TEMA 1: [Análisis]
@@ -43,11 +45,11 @@ export default async function handler(req, res) {
           messages: [
             { 
               role: "system", 
-              content: "Eres una IA de análisis mudo: solo entregas resultados. Tienes terminantemente prohibido usar las palabras 'datos', 'específicos', 'información', 'cifras' o 'titulares' para excusarte. Si no hay números, analiza el concepto político/económico directamente." 
+              content: "Eres un analista financiero mudo: solo entregas resultados directos. No explicas tus limitaciones ni rellenas con texto innecesario. Si no hay cifras, analizas el concepto directamente." 
             },
             { role: "user", content: prompt }
           ],
-          temperature: 0.1
+          temperature: 0.1 // Estabilidad total para evitar alucinaciones
         })
       });
 
@@ -56,9 +58,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ resumen: data.choices[0].message.content });
       }
     } catch (error) {
-      console.error("Error en llave...");
+      console.error("Error en llave activa, probando siguiente...");
     }
   }
 
-  res.status(500).json({ error: 'Fallo total' });
+  res.status(500).json({ error: 'Fallo total de conexión con el motor de IA' });
 }
