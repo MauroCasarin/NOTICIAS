@@ -14,22 +14,21 @@ export default async function handler(req, res) {
   }
 
   const prompt = modo === 'resumir' 
-    ? `SINTESIS ESTRATÉGICA: Analiza estos titulares y dime en una frase corta cuál es el tema o nombre propio que más se repite: ${titulos}`
-    : `Actúa como un analista financiero experto. Analiza estos titulares y genera exactamente 4 VEREDICTOS técnicos basados en la FRECUENCIA de aparición.
+    ? `SINTESIS: Tema más repetido en una frase corta: ${titulos}`
+    : `Actúa como analista senior. Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
 
-       REGLAS CRÍTICAS DE CONTENIDO:
-       1. PROHIBIDO INVENTAR VALORES: Si un titular no menciona un número de cotización, precio o tasa específica, NO inventes datos. Si necesitas referenciar una cifra que no está, pon "Dato no disponible en los titulares".
-       2. JERARQUÍA POR FRECUENCIA: El TEMA 1 debe ser el más mencionado en los medios, el TEMA 2 el segundo, y así sucesivamente.
-       3. NO REPETICIÓN ABSOLUTA: Si un activo (ej. Dólar), empresa o persona ya fue analizado en un tema previo, queda PROHIBIDO mencionarlo en los siguientes veredictos. Cada punto debe tratar un asunto totalmente independiente.
+       REGLAS DE ORO:
+       1. CERO RELLENO: Prohibido usar frases introductorias, saludos o conclusiones. Prohibido explicar por qué no hay datos.
+       2. DATOS: No inventes números. Si no hay cifras en los titulares, describe la tendencia de forma puramente cualitativa.
+       3. JERARQUÍA Y NO REPETICIÓN: TEMA 1 es el más frecuente. Prohibido repetir temas, activos o personas entre los 4 puntos. Cada veredicto debe ser sobre un asunto totalmente diferente.
        
-       FORMATO DE SALIDA:
-       - TEMA 1 (Máxima relevancia): [Análisis técnico de 3-4 líneas]
-       - TEMA 2: [Análisis técnico de 3-4 líneas]
-       - TEMA 3: [Análisis técnico de 3-4 líneas]
-       - TEMA 4: [Análisis técnico de 3-4 líneas]
+       FORMATO (ESTRICTO):
+       TEMA 1 (Máxima frecuencia): [Análisis técnico directo en 2 oraciones]
+       TEMA 2: [Análisis técnico directo en 2 oraciones]
+       TEMA 3: [Análisis técnico directo en 2 oraciones]
+       TEMA 4: [Análisis técnico directo en 2 oraciones]
 
-       ESTILO: Directo al grano. Usa terminología financiera argentina (MEP, CCL, Lecaps, Brecha). 
-       
+       Lenguaje: Financiero argentino (MEP, CCL, Lecaps, Brecha).
        Titulares: ${titulos}`;
 
   for (const key of apiKeys) {
@@ -45,11 +44,11 @@ export default async function handler(req, res) {
           messages: [
             { 
               role: "system", 
-              content: "Eres un analista de mercados. Tu prioridad es la exactitud factual. Si no hay datos numéricos en el texto, no los generas." 
+              content: "Eres un analista implacable. No rellenas con texto innecesario. No das excusas sobre falta de datos. Vas directo al grano." 
             },
             { role: "user", content: prompt }
           ],
-          temperature: 0.1
+          temperature: 0.1 // Mantenemos baja para evitar creatividad innecesaria
         })
       });
 
@@ -58,9 +57,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ resumen: data.choices[0].message.content });
       }
     } catch (error) {
-      console.error("Error con una de las llaves, probando la siguiente...");
+      console.error("Error en llave, reintentando...");
     }
   }
 
-  res.status(500).json({ error: 'Todas las API Keys fallaron' });
+  res.status(500).json({ error: 'Fallo total de API' });
 }
