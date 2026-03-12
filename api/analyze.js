@@ -4,7 +4,6 @@ export default async function handler(req, res) {
 
   const { titulos, modo } = req.body;
   
-  // Selección de API Keys desde variables de entorno
   const apiKeys = [
     process.env.NoticiasAPI,
     process.env.NoticiasAPI2
@@ -14,22 +13,23 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Faltan las Variables de Entorno en Vercel' });
   }
 
-  // Configuración del prompt con reglas estrictas de no repetición y veracidad
   const prompt = modo === 'resumir' 
-    ? `SINTESIS: Tema más repetido en una frase: ${titulos}`
+    ? `SINTESIS: Tema más repetido en una frase corta: ${titulos}`
     : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
 
-       REGLAS DE ORO:
-       1. CERO EXCUSAS: Prohibido usar las palabras "datos", "específicos", "información", "cifras" o "titulares" para justificar falta de precisión. Si no hay números, analiza la tendencia política o económica directamente.
-       2. JERARQUÍA Y NO REPETICIÓN: El TEMA 1 es el más frecuente. Cada veredicto debe tratar un activo, empresa o persona diferente. Prohibido repetir temas entre los 4 puntos.
-       3. CONCISIÓN: Máximo 2 oraciones por tema. Sin introducciones ni saludos.
+       REGLAS ESTRICTAS:
+       1. SIN VALORES NUMÉRICOS: Está terminantemente prohibido dar precios, cotizaciones, tasas o porcentajes. 
+       2. TENDENCIAS: Puedes mencionar si un activo subió, bajó o está estable, pero nunca digas cuánto ni a qué precio.
+       3. CERO EXCUSAS: Prohibido decir "no hay datos" o "faltan cifras". Si no hay números, analiza el impacto o la tendencia cualitativa directamente.
+       4. NO REPETICIÓN: Cada uno de los 4 temas debe ser diferente (no repetir Dólar, ni la misma empresa o persona).
        
        FORMATO:
-       TEMA 1: [Análisis]
-       TEMA 2: [Análisis]
-       TEMA 3: [Análisis]
-       TEMA 4: [Análisis]
+       TEMA 1: [Análisis de tendencia en 2 oraciones]
+       TEMA 2: [Análisis de tendencia en 2 oraciones]
+       TEMA 3: [Análisis de tendencia en 2 oraciones]
+       TEMA 4: [Análisis de tendencia en 2 oraciones]
 
+       Lenguaje: Financiero argentino (MEP, CCL, Lecaps, Brecha).
        Titulares: ${titulos}`;
 
   for (const key of apiKeys) {
@@ -45,11 +45,11 @@ export default async function handler(req, res) {
           messages: [
             { 
               role: "system", 
-              content: "Eres un analista financiero mudo: solo entregas resultados directos. No explicas tus limitaciones ni rellenas con texto innecesario. Si no hay cifras, analizas el concepto directamente." 
+              content: "Eres un analista mudo. Prohibido usar las palabras 'datos', 'cifras', 'números' o 'específicos'. Puedes decir que algo sube o baja, pero tienes prohibido dar el valor o el porcentaje." 
             },
             { role: "user", content: prompt }
           ],
-          temperature: 0.1 // Estabilidad total para evitar alucinaciones
+          temperature: 0.1
         })
       });
 
@@ -58,9 +58,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ resumen: data.choices[0].message.content });
       }
     } catch (error) {
-      console.error("Error en llave activa, probando siguiente...");
+      console.error("Error en llave, probando siguiente...");
     }
   }
 
-  res.status(500).json({ error: 'Fallo total de conexión con el motor de IA' });
+  res.status(500).json({ error: 'Error de conexión con IA' });
 }
