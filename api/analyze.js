@@ -14,21 +14,20 @@ export default async function handler(req, res) {
   }
 
   const prompt = modo === 'resumir' 
-    ? `SINTESIS: Tema más repetido en una frase corta: ${titulos}`
-    : `Actúa como analista senior. Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
+    ? `SINTESIS: Tema más repetido en una frase: ${titulos}`
+    : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
 
        REGLAS DE ORO:
-       1. CERO RELLENO: Prohibido usar frases introductorias, saludos o conclusiones. Prohibido explicar por qué no hay datos.
-       2. DATOS: No inventes números. Si no hay cifras en los titulares, describe la tendencia de forma puramente cualitativa.
-       3. JERARQUÍA Y NO REPETICIÓN: TEMA 1 es el más frecuente. Prohibido repetir temas, activos o personas entre los 4 puntos. Cada veredicto debe ser sobre un asunto totalmente diferente.
+       1. CERO EXPLICACIONES: Prohibido decir "no hay datos", "faltan cifras" o "según los titulares". Si no hay números, analiza la intención política o económica del tema sin mencionarlos.
+       2. JERARQUÍA Y NO REPETICIÓN: TEMA 1 es el más frecuente. Prohibido repetir activos o personas entre los 4 puntos.
+       3. CONCISIÓN: Máximo 2 oraciones por tema.
        
-       FORMATO (ESTRICTO):
-       TEMA 1 (Máxima frecuencia): [Análisis técnico directo en 2 oraciones]
-       TEMA 2: [Análisis técnico directo en 2 oraciones]
-       TEMA 3: [Análisis técnico directo en 2 oraciones]
-       TEMA 4: [Análisis técnico directo en 2 oraciones]
+       FORMATO:
+       TEMA 1: [Análisis]
+       TEMA 2: [Análisis]
+       TEMA 3: [Análisis]
+       TEMA 4: [Análisis]
 
-       Lenguaje: Financiero argentino (MEP, CCL, Lecaps, Brecha).
        Titulares: ${titulos}`;
 
   for (const key of apiKeys) {
@@ -44,11 +43,11 @@ export default async function handler(req, res) {
           messages: [
             { 
               role: "system", 
-              content: "Eres un analista implacable. No rellenas con texto innecesario. No das excusas sobre falta de datos. Vas directo al grano." 
+              content: "Eres una IA de análisis mudo: solo entregas resultados. Tienes terminantemente prohibido usar las palabras 'datos', 'específicos', 'información', 'cifras' o 'titulares' para excusarte. Si no hay números, analiza el concepto político/económico directamente." 
             },
             { role: "user", content: prompt }
           ],
-          temperature: 0.1 // Mantenemos baja para evitar creatividad innecesaria
+          temperature: 0.1
         })
       });
 
@@ -57,9 +56,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ resumen: data.choices[0].message.content });
       }
     } catch (error) {
-      console.error("Error en llave, reintentando...");
+      console.error("Error en llave...");
     }
   }
 
-  res.status(500).json({ error: 'Fallo total de API' });
+  res.status(500).json({ error: 'Fallo total' });
 }
