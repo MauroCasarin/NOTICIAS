@@ -28,7 +28,16 @@
         .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 90vw, 320px), 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
         .diario-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
         .diario-header { font-size: 0.7rem; font-weight: 900; color: #1e40af; margin-bottom: 10px; border-left: 2px solid #1e40af; padding-left: 6px; text-transform: uppercase; }
-        .title { font-size: 0.8rem; font-weight: 500; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f1f5f9; line-height: 1.3; }
+        .title { font-size: 0.8rem; font-weight: 500; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f1f5f9; line-height: 1.3; cursor: pointer; }
+        
+        /* Estilos del Modal */
+        #newsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 10px; }
+        .modal-content { background: white; width: 100%; max-width: 1000px; height: 90vh; border-radius: 15px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .modal-header { padding: 12px 15px; background: var(--dark-blue); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-weight: 800; font-size: 0.75rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 80%; text-transform: uppercase; }
+        .close-btn { background: white; color: var(--dark-blue); border: none; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-weight: 900; font-size: 0.8rem; }
+        #newsFrame { width: 100%; flex: 1; border: none; background: white; }
+
         @keyframes pulse-icon { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
     </style>
 </head>
@@ -58,8 +67,17 @@
         <div id="pizarra" class="grid-noticias"></div>
     </main>
 
+    <div id="newsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="modalTitle" class="modal-title">VISTA PREVIA</span>
+                <button class="close-btn" onclick="cerrarModal()">CERRAR X</button>
+            </div>
+            <iframe id="newsFrame"></iframe>
+        </div>
+    </div>
+
 <script>
-    // URL DE TU NUEVO GOOGLE APPS SCRIPT
     const NEWS_API = "https://script.google.com/macros/s/AKfycbxIVYnUl0Nl_-Mu1vQDCWeBpckrhSn3wIQ8A5yqHgM5MSgxEoMAXAEXoPI7FaVITGiopg/exec"; 
     let ultimaData = [];
     let isTyping = false;
@@ -123,6 +141,24 @@
         type();
     }
 
+    // Funciones del Modal
+    function abrirNoticia(url, titulo) {
+        const modal = document.getElementById('newsModal');
+        const frame = document.getElementById('newsFrame');
+        document.getElementById('modalTitle').innerText = titulo;
+        frame.src = url;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function cerrarModal() {
+        const modal = document.getElementById('newsModal');
+        const frame = document.getElementById('newsFrame');
+        modal.style.display = 'none';
+        frame.src = ""; 
+        document.body.style.overflow = 'auto';
+    }
+
     function render(news) {
         const pizarra = document.getElementById('pizarra');
         pizarra.innerHTML = '';
@@ -134,7 +170,7 @@
         for (const f in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
-            const rows = grouped[f].map(n => `<a href="${n.link}" target="_blank" class="title">${n.titulo}</a>`).join('');
+            const rows = grouped[f].map(n => `<a onclick="abrirNoticia('${n.link}', '${n.titulo.replace(/'/g, "\\'")}')" class="title">${n.titulo}</a>`).join('');
             card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
             pizarra.appendChild(card);
         }
