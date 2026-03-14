@@ -15,12 +15,12 @@ export default async function handler(req, res) {
 
   const prompt = modo === 'resumir' 
     ? `SINTESIS: Tema más repetido en una frase corta: ${titulos}`
-    : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA de los titulares.
+    : `Genera 4 VEREDICTOS técnicos basados en la FRECUENCIA.
 
        REGLAS ESTRICTAS DE CONTENIDO:
-       1. NO REPETICIÓN DE TEMAS: Si un activo (ej. Dólar), persona o empresa ya fue tratado en un tema anterior, está PROHIBIDO mencionarlo en los puntos siguientes. Cada uno de los 4 temas debe ser sobre un asunto totalmente independiente.
-       2. PROHIBIDO VALORES: No des precios, cotizaciones, porcentajes ni tasas. Puedes decir si algo subió o bajó, pero nunca el valor.
-       3. CERO EXCUSAS: Prohibido decir "no hay datos", "faltan cifras" o "según los titulares". Analiza la tendencia directamente.
+       1. NO REPETICIÓN DE TEMAS: Si un activo (ej. Dólar), persona o empresa ya fue tratado en un tema anterior, está PROHIBIDO mencionarlo en los puntos siguientes. Cada tema debe ser totalmente independiente.
+       2. PROHIBIDO VALORES: No des precios, cotizaciones, porcentajes ni tasas. Puedes decir si algo subió o bajó, pero nunca el valor numérico.
+       3. CERO EXCUSAS: Prohibido usar palabras como "datos", "específicos", "información", "cifras" o "titulares" para justificar falta de precisión. Analiza la tendencia directamente.
        
        FORMATO DE SALIDA (SIN INTRODUCCIONES):
        TEMA 1: [Análisis técnico en 2 oraciones]
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
           messages: [
             { 
               role: "system", 
-              content: "Eres un analista mudo. Tu respuesta empieza directo en TEMA 1. Tienes prohibido usar las palabras 'datos', 'específicos', 'información' o 'cifras'. No incluyes números ni símbolos de porcentaje." 
+              content: "Eres un analista financiero mudo. Tu respuesta empieza directamente en 'TEMA 1'. Tienes terminantemente prohibido usar las palabras 'datos', 'específicos', 'información' o 'cifras'. No incluyes números ni símbolos de porcentaje bajo ninguna circunstancia." 
             },
             { role: "user", content: prompt }
           ],

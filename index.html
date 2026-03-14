@@ -12,113 +12,36 @@
             --dark-blue: #002d72;
             --bg-light: #f1f5f9;
         }
-        
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg-light); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
-
-        .hero-header {
-            background: var(--blue-gradient);
-            padding: clamp(20px, 5vh, 40px) 20px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .brand-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(10px, 2vw, 15px);
-            margin-bottom: 20px;
-        }
-
-        /* TEXTO ADAPTABLE: clamp(mínimo, preferido, máximo) */
-        .brand-title { 
-            font-weight: 900; 
-            font-size: clamp(1.1rem, 4vw, 1.6rem); 
-            letter-spacing: -0.5px; 
-            text-transform: uppercase; 
-            margin: 0;
-        }
-
-        .insta-icon {
-            filter: brightness(0) invert(1);
-            width: clamp(24px, 5vw, 30px);
-            animation: pulse-icon 2s infinite;
-        }
-
+        .hero-header { background: var(--blue-gradient); padding: clamp(20px, 5vh, 40px) 20px; color: white; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .brand-header { display: flex; align-items: center; justify-content: center; gap: clamp(10px, 2vw, 15px); margin-bottom: 20px; }
+        .brand-title { font-weight: 900; font-size: clamp(1.1rem, 4vw, 1.6rem); letter-spacing: -0.5px; text-transform: uppercase; margin: 0; }
+        .insta-icon { filter: brightness(0) invert(1); width: clamp(24px, 5vw, 30px); animation: pulse-icon 2s infinite; }
         .ai-container { max-width: 800px; margin: 0 auto; width: 100%; }
-
-        #ai-resumen { 
-            /* Fuente más delicada y adaptable */
-            font-size: clamp(0.85rem, 2.5vw, 0.95rem); 
-            line-height: 1.6; 
-            color: rgba(255,255,255,0.95);
-            height: auto; min-height: 60px; padding: 15px;
-            margin-bottom: 20px; font-weight: 400; 
-            border-left: 3px solid rgba(255,255,255,0.4);
-            background: rgba(0,0,0,0.15); border-radius: 10px;
-            text-align: left;
-            white-space: pre-wrap;
-        }
-
-        .btn-main {
-            background: white; color: #1e40af; border: none;
-            padding: clamp(10px, 2vh, 14px) clamp(20px, 5vw, 35px);
-            border-radius: 10px; font-weight: 800;
-            font-size: clamp(0.75rem, 2vw, 0.85rem); 
-            cursor: pointer; transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex;
-            align-items: center; gap: 8px; margin: 0 auto;
-        }
-
-        .metrics-bar {
-            padding: 10px 20px; background: white; border-bottom: 1px solid #e2e8f0;
-            display: flex; justify-content: center; align-items: center;
-            position: sticky; top: 0; z-index: 100;
-        }
+        #ai-resumen { font-size: clamp(0.85rem, 2.5vw, 0.95rem); line-height: 1.6; color: rgba(255,255,255,0.95); height: auto; min-height: 60px; padding: 15px; margin-bottom: 20px; font-weight: 400; border-left: 3px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.15); border-radius: 10px; text-align: left; white-space: pre-wrap; }
+        .btn-main { background: white; color: #1e40af; border: none; padding: clamp(10px, 2vh, 14px) clamp(20px, 5vw, 35px); border-radius: 10px; font-weight: 800; font-size: clamp(0.75rem, 2vw, 0.85rem); cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 8px; margin: 0 auto; }
+        .metrics-bar { padding: 10px 20px; background: white; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: center; align-items: center; position: sticky; top: 0; z-index: 100; }
         .metric-label { font-size: 0.65rem; font-weight: 800; color: #64748b; margin-right: 5px; }
         .metric-value { font-size: 0.8rem; font-weight: 900; color: #1e40af; }
-
         .scroll-content { flex: 1; padding: clamp(10px, 3vw, 20px); }
-        .grid-noticias { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 90vw, 320px), 1fr)); 
-            gap: 15px; max-width: 1400px; margin: auto; 
-        }
-        
-        .diario-card { 
-            background: white; border-radius: 10px; padding: 12px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
-        }
-        .diario-header { 
-            font-size: 0.7rem; font-weight: 900; color: #1e40af; 
-            margin-bottom: 10px; border-left: 2px solid #1e40af; padding-left: 6px; text-transform: uppercase;
-        }
-        .title { 
-            font-size: 0.8rem; font-weight: 500; color: #334155; 
-            text-decoration: none; display: block; padding: 6px 0; 
-            border-bottom: 1px solid #f1f5f9; line-height: 1.3;
-        }
-
-        @keyframes pulse-icon {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
+        .grid-noticias { display: grid; grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 90vw, 320px), 1fr)); gap: 15px; max-width: 1400px; margin: auto; }
+        .diario-card { background: white; border-radius: 10px; padding: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .diario-header { font-size: 0.7rem; font-weight: 900; color: #1e40af; margin-bottom: 10px; border-left: 2px solid #1e40af; padding-left: 6px; text-transform: uppercase; }
+        .title { font-size: 0.8rem; font-weight: 500; color: #334155; text-decoration: none; display: block; padding: 6px 0; border-bottom: 1px solid #f1f5f9; line-height: 1.3; }
+        @keyframes pulse-icon { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
     </style>
 </head>
 <body>
-
     <header class="hero-header">
         <div class="ai-container">
             <div class="brand-header">
-                <a href="https://www.instagram.com/3d_mc_3d/" target="_blank" style="text-decoration:none;">
+                <a href="https://www.instagram.com/3d_mc_3d/" target="_blank">
                     <img src="https://raw.githubusercontent.com/MauroCasarin/NOTICIAS/refs/heads/main/favicon.ico" class="insta-icon">
                 </a>
                 <h1 class="brand-title">ANÁLISIS IA DE NOTICIAS</h1>
             </div>
-            <div id="ai-resumen">SINCROIZANDO FUENTES...</div>
+            <div id="ai-resumen">SINCRONIZANDO FUENTES...</div>
             <button id="btn-master" class="btn-main" onclick="iniciarProceso()" disabled>
                 <i data-lucide="brain-circuit" size="16"></i>
                 <span id="btn-label">ESPERANDO DATOS</span>
@@ -136,8 +59,8 @@
     </main>
 
 <script>
-    // Tu lógica de JS permanece igual, solo actualizamos el render para ser más "delicado"
-    const NEWS_API = "https://script.google.com/macros/s/AKfycbxnl6mjB1Zd_eW0LxlYPylMn4gdP4_JgWBfSsB-BMI4czcA65W8gekaxVXlWAi6LNagbQ/exec"; 
+    // URL DE TU NUEVO GOOGLE APPS SCRIPT
+    const NEWS_API = "https://script.google.com/macros/s/AKfycbxIVYnUl0Nl_-Mu1vQDCWeBpckrhSn3wIQ8A5yqHgM5MSgxEoMAXAEXoPI7FaVITGiopg/exec"; 
     let ultimaData = [];
     let isTyping = false;
 
@@ -167,7 +90,7 @@
         document.getElementById('ai-resumen').innerText = "Generando informe financiero...";
 
         try {
-            const titulos = ultimaData.slice(0, 60).map(n => n.titulo).join(" | ");
+            const titulos = ultimaData.slice(0, 100).map(n => n.titulo).join(" | ");
             const resp = await fetch("/api/analyze", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
