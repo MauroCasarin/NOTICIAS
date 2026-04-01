@@ -78,8 +78,7 @@
     </div>
 
 <script>
-    // URL Actualizada con tu nuevo script de Google
-    const NEWS_API = "https://script.google.com/macros/s/AKfycbzyM3LVW7j2MCO-h4sCaV57qg1g601X8t2BDmmkYe_5G0LnVgoBO2UhvIRR9dcVaMz4Hg/exec"; 
+    const NEWS_API = "https://script.google.com/macros/s/AKfycbxIVYnUl0Nl_-Mu1vQDCWeBpckrhSn3wIQ8A5yqHgM5MSgxEoMAXAEXoPI7FaVITGiopg/exec"; 
     let ultimaData = [];
     let isTyping = false;
 
@@ -171,7 +170,6 @@
         for (const f in grouped) {
             const card = document.createElement('section');
             card.className = 'diario-card';
-            // Renderizado optimizado para el Modal
             const rows = grouped[f].map(n => `<a onclick="abrirNoticia('${n.link}', '${n.titulo.replace(/'/g, "\\'")}')" class="title">${n.titulo}</a>`).join('');
             card.innerHTML = `<div class="diario-header">${f}</div>${rows}`;
             pizarra.appendChild(card);
